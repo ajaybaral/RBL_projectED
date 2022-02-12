@@ -7,7 +7,7 @@ class MakeBid extends Component{
     constructor(props){
         super(props);
         this.state = {
-            product: auctions[2]
+            product: auctions[this.props.productId-1]
         };
     }
 
