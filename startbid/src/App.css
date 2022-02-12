@@ -1,0 +1,65 @@
+body{
+    overflow-x: hidden;
+    background-size: cover;
+}
+.live-icon {
+  animation-name: liveAnimation;
+  animation-duration: 1.5s;
+animation-iteration-count: infinite;
+}
+
+@keyframes liveAnimation {
+  0%   {fill: #fafafa;}
+  25%  {fill: #00cc00;}
+  50%  {fill: #00cc00;}
+  100% {fill: #fafafa;}
+}
+
+.animate-image{
+    /* transition-duration:  5s; */
+}
+
+.move-image{
+    transform:translate(50px);
+
+}
+.change-image{
+    animation-name: changeImage;
+    animation-iteration-count: infinite;
+    animation-duration: 10s;
+    animation-direction: alternate;
+}
+.change-image2{
+    animation-name: changeImage;
+    animation-iteration-count: infinite;
+    animation-duration: 20s;
+    animation-direction: alternate;
+}
+@keyframes changeImage {
+    0% {
+    opacity:1;
+  }
+  25% {
+  opacity:1;
+  }
+  75% {
+  opacity:0;
+  }
+  100% {
+  opacity:0;
+  }
+  }
+
+.authenticate-btn{
+    background-color: white;
+    color: #21325E;
+    width: 90%;
+}
+.authenticate-btn-active{
+    background-color: #21325E;
+    color: white;
+}
+
+.navlinks:hover{
+    border-bottom: 1px solid #FFA0A0;
+}
