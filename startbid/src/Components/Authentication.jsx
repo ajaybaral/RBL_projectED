@@ -135,7 +135,7 @@ class Authentication extends Component{
             <Row>
                 <Col md={7} style={{padding:'100px', color:'white'}}>
                     <h1 
-                    style={{fontSize:'7rem', fontWeight:'bolder'}}>Value For Your Valuables.</h1> 
+                    style={{fontSize:'500%', fontWeight:'bolder'}}>Value For Your Valuables.</h1> 
                     
                     <h5 style={{marginTop:'30px'}}> <span style={{fontSize:'40px'}}> 502416 </span>Happy Customers </h5>
                     <h5> <span style={{fontSize:'40px'}}> 20942548 </span> Antiques Sold </h5>
