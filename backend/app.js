@@ -6,7 +6,6 @@ const app=express();
 app.use(cors());
 app.use(bodyparser.json());
 const http = require("http");
-
 const server = http.createServer(app);
 
 const uri = "mongodb+srv://Suriyaa:mthaniga@cluster0.rsh4e.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";

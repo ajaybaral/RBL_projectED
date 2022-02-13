@@ -18,10 +18,38 @@ class MakeBid extends Component{
             address:"0x645",
             auction_bid_modal:false,
             latency:0,
+            connectwalletstatus: 'Connect Wallet',
+            account_addr: '',
+            web3: null,
+            setshow:false
+
         };
     }
+
     componentDidMount()
     {
+        var web3;
+        const Web3 = require('web3');
+        // web3 lib instance
+        if(typeof window.web3 !== 'undefined'){
+            web3 = new Web3(window.ethereum);
+            // get all accounts
+            // const accounts = await web3.eth.getAccounts();
+            this.setState({web3: web3});
+            this.connect(web3);
+            this.initialiseAddress(web3);
+        }
+        else{
+            alert('No web3? You should consider trying MetaMask!');
+        }
+
+        if(window.ethereum) {
+            window.ethereum.on('accountsChanged', () => {
+                this.initialiseAddress(web3);
+                console.log("Account changed");
+            });
+        }
+        
         var key={id:this.props.productId};
         console.log(key);
         fetch('http://localhost:8000/product',{
@@ -52,17 +80,63 @@ class MakeBid extends Component{
 
          });
     }
+    
+    initialiseAddress(web3) {
+
+        web3.eth.getAccounts().then((accounts) => {
+
+            var account_addr = accounts[0];
+    
+            this.setState({account_addr: accounts[0]});
+    
+            if(!account_addr) {
+                
+                this.setState({connectwalletstatus: 'Connect Wallet'});
+                return;
+            }
+    
+            const len = account_addr.length;
+            const croppedAddress = account_addr.substring(0,6) + "..." + account_addr.substring(len-4, len);
+    
+            web3.eth.getBalance(account_addr).then((balance) => {
+    
+                var account_bal = (Math.round(web3.utils.fromWei(balance) * 100) / 100);
+                var temp = croppedAddress + " (" + account_bal + " ETH)";
+                this.setState({connectwalletstatus: temp});
+            });
+        });
+    }
+
+    connect(web3) {
+
+        window.ethereum
+        .request({ method: 'eth_requestAccounts' })
+        .then(this.initialiseAddress(web3))
+        .catch((err) => {
+        if (err.code === 4001) {
+            alert('Please connect to MetaMask.');
+        } else {
+            console.error(err);
+        }
+        });
+    }
+
+
+
     render(){
         return(
             <>
             <Container>
                 
             <Row style={{marginTop:'20px'}}>   
-                <Col>
+                <Col md={9}>
                 <Breadcrumb>
                     <BreadcrumbItem href="/explore">Explore</BreadcrumbItem>
                     <BreadcrumbItem active>{this.state.product.title}</BreadcrumbItem>
                 </Breadcrumb>
+                </Col>
+                <Col md={3}>
+                <Button style={{height:'3rem'}} >{this.state.connectwalletstatus}</Button>
                 </Col>
             </Row>
             <Row style={{marginTop:'30px'}}>

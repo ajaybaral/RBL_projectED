@@ -29,6 +29,29 @@ class Home extends Component{
    
  
     componentDidMount = () => {
+
+        var web3;
+        const Web3 = require('web3');
+        // web3 lib instance
+        if(typeof window.web3 !== 'undefined'){
+            web3 = new Web3(window.ethereum);
+            console.log(web3);
+            // get all accounts
+            // const accounts = await web3.eth.getAccounts();
+            this.setState({web3: web3});
+            this.connect(web3);
+            this.initialiseAddress(web3);
+        }
+        else{
+            alert('No web3? You should consider trying MetaMask!');
+        }
+
+        if(window.ethereum) {
+            window.ethereum.on('accountsChanged', () => {
+                this.initialiseAddress(web3);
+                console.log("Account changed");
+            });
+        }
      
         setInterval(async() => {
             await this.setState({bulbColorIndex: (this.state.bulbColorIndex+1)%2});
@@ -49,6 +72,45 @@ class Home extends Component{
         })
     }
 
+    initialiseAddress(web3) {
+
+        web3.eth.getAccounts().then((accounts) => {
+
+            var account_addr = accounts[0];
+    
+            this.setState({account_addr: accounts[0]});
+    
+            if(!account_addr) {
+                
+                this.setState({connectwalletstatus: 'Connect Wallet'});
+                return;
+            }
+    
+            const len = account_addr.length;
+            const croppedAddress = account_addr.substring(0,6) + "..." + account_addr.substring(len-4, len);
+    
+            web3.eth.getBalance(account_addr).then((balance) => {
+    
+                var account_bal = (Math.round(web3.utils.fromWei(balance) * 100) / 100);
+                var temp = croppedAddress + " (" + account_bal + " ETH)";
+                this.setState({connectwalletstatus: temp});
+            });
+        });
+    }
+
+    connect(web3) {
+
+        window.ethereum
+        .request({ method: 'eth_requestAccounts' })
+        .then(this.initialiseAddress(web3))
+        .catch((err) => {
+        if (err.code === 4001) {
+            alert('Please connect to MetaMask.');
+        } else {
+            console.error(err);
+        }
+        });
+    }
     unixToDate(unix_timestamp) {
         var date = new Date(unix_timestamp * 1000);
         return date.getUTCDate().toString() + '/' + date.getUTCMonth().toString()+1 + '/' + date.getFullYear().toString();
@@ -59,14 +121,13 @@ class Home extends Component{
         if(this.state.b==0)
         {
             return( 
-                <Spinner style={{marginLeft:"50%",marginTop:"20%",height:"70px",width:"70px"}}  animation="grow" role="status">
+                <Spinner style={{marginLeft:"40%",marginTop:"10%",height:"70px",width:"70px"}}  animation="grow" role="status">
                 </Spinner>
             )
         }
         else{
             return(
                 <Row>
-                    
                     
                     {this.state.auctions.map((auction)=>{
                         return(
@@ -181,46 +242,22 @@ class Home extends Component{
                     style={{ fontWeight:'bolder'}}
                 > Start Bid  </h1>
                     </Col>
-                    <Col md={6} style={{textAlign:'right'}}>
-                        <Button onClick={
-                            () => {
-                                const Web3 = require('web3');
-                                // web3 lib instance
-                                if(typeof window.web3 !== 'undefined'){
-                                    const web3 = new Web3(window.ethereum);
-                                    // get all accounts
-                                    // const accounts = await web3.eth.getAccounts();
-                                    this.setState({web3: web3});
-                                    this.connect(web3);
-                                    this.initialiseAddress(web3);
-                                }
-                                else{
-                                    alert('No web3? You should consider trying MetaMask!');
-                                }
-                            }
-                        }>{this.state.connectwalletstatus}</Button>
-                        <Dropdown style={{margin:'10px'}}>
-                        <Dropdown.Toggle id="auction-filter"
-                            style={{paddingLeft:'20px', paddingRight:'20px', backgroundColor:'#21325E'}}
-                        >
-                            {this.state.auctionFilterActive}
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu>
-                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'All'})}}>All</Dropdown.Item>
-                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'Live'})}}>Live</Dropdown.Item>
-                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'Upcoming'})}}>Upcoming</Dropdown.Item>
-                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'Ended'})}}>Ended</Dropdown.Item>
-                        </Dropdown.Menu>
-                        </Dropdown>
+                    <Col md={6}>
+                        <h1>hello</h1>
                     </Col>
                 </Row>
+                
+                <Row>
+                <Col md={6}>
 
-                <h4 style={{marginLeft:'20px'}}>{this.state.auctionFilterActive} Auctions</h4> 
+                <h4 style={{marginLeft:'20px'}}>Live Auctions</h4> 
+                </Col>
+                <Col md={6} style={{textAlign:'right'}}>
                 <Button onClick={()=>{
                      this.setState({setshow:true})
                 }}>Create new Auction</Button>
-
+                </Col>
+                </Row>
                 
                 <Modal show={this.state.setshow}>
             <Modal.Header >
@@ -273,7 +310,8 @@ class Home extends Component{
                                 'Content-Type' : 'application/json'
                             },
                             body:JSON.stringify(key)
-                            });
+                            })
+                            this.setState({setshow:false})
                         }} variant="primary" >
                         Submit
                     </Button>
