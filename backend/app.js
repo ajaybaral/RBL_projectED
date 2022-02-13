@@ -63,6 +63,34 @@ app.post("/product",async (req,res)=>{
     }
 })
 
+app.post("/login",async (req,res)=>{
+    try {
+        // Connect to the MongoDB cluster
+       obj=req.body;
+       
+        const result=await finduser(client,obj.name);
+        var finalans={};
+        
+        if(result.password===req.body.password)
+        {
+            finalans["success"]=1;
+        }
+        else
+        finalans["success"]=0;
+      console.log(finalans)
+        res.send(JSON.stringify(finalans));
+       
+         
+    } catch (e) {
+        console.error(e);
+    } finally {
+        // Close the connection to the MongoDB cluster
+       //  await client.close();
+    
+    }
+   
+})
+
 io.on('connection', socket => {
     console.log("connected")
     socket.on('change', async data => {
@@ -71,7 +99,8 @@ io.on('connection', socket => {
        
       
         var myquery = { _id:data["id"] };
-        var newvalues = { $set: {price:data["news"] } };
+        var newvalues = { $set: {price:parseInt(data["news"]) } };
+
         const result=await client.db("Auction_Platform").collection("auctions").updateOne(myquery, newvalues, function(err, res) {
             if (err) throw err;
             console.log("1 document updated");
@@ -107,4 +136,10 @@ async function find(client,id)
     const j=JSON.stringify(cursor);
   
   return j;
+}
+async function finduser(client,username)
+{
+    const cursor = await client.db("Auction_Platform").collection("Users").findOne({"username":username});
+    console.log(cursor);
+    return cursor;
 }

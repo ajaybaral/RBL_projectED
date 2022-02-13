@@ -110,7 +110,22 @@ class Authentication extends Component{
         await this.setState({currentState: "Login"})
         document.querySelector("#login-btn").classList.add("authenticate-btn-active");
         document.querySelector("#signup-btn").classList.remove("authenticate-btn-active");
+        var key={name:this.state.lusermail.split("@")[0],password:this.state.lpassword};
+        fetch('http://localhost:8000/login',{
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json'
+        },
+        body:JSON.stringify(key)
+        }).then((res)=>{
+            return res.json();
+        }).then((res)=>{
+            if(res.success==1)
+            {
+              alert("nice");
+            }
 
+        })
 
     }
     signup = async() => {
