@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Container, Row, Col, Card, Button, Dropdown  } from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Dropdown ,Spinner } from "react-bootstrap";
 import Bulb from 'react-bulb';
 import { auctions } from "../Resources/auctions";
 import {AiFillHeart} from 'react-icons/ai';
@@ -13,14 +13,31 @@ class Home extends Component{
             bulbColor:['#00cc00', '#fafafa' ],
             bulbColorIndex: 0,
             auctionFilter: ['Live', 'Upcoming', 'Ended', 'All'],
-            auctionFilterActive: 'Live'
+            auctionFilterActive: 'Live',
+            auctions:[],
+            b:0
+
         };
+        this.addproducts=this.addproducts.bind(this);
     }
     
     componentDidMount = () => {
         setInterval(async() => {
             await this.setState({bulbColorIndex: (this.state.bulbColorIndex+1)%2});
         }, 600);
+        fetch('http://localhost:8000/home',{
+        method: 'GET',
+        headers: {
+            'Content-Type' : 'application/json'
+        }
+        }).then((res)=>{
+            if(res.ok)
+            return res.json();
+        }).then((res)=>{
+            this.setState({auctions:res});
+            this.setState({b:1});
+            
+        })
     }
 
     render(){
@@ -69,8 +86,19 @@ class Home extends Component{
 
                 <h4 style={{marginLeft:'20px'}}>{this.state.auctionFilterActive} Auctions</h4> 
                 
+    addproducts()
+    {
+        if(this.state.b==0)
+        {
+            return( 
+                <Spinner style={{marginLeft:"50%",marginTop:"20%",height:"70px",width:"70px"}}  animation="grow" role="status">
+                </Spinner>
+            )
+        }
+        else{
+            return(
                 <Row>
-                    {auctions.map((auction)=>{
+                    {this.state.auctions.map((auction)=>{
                         return(
                             <Col md={4} 
                                 style={{padding: '30px'}}>
@@ -110,7 +138,7 @@ class Home extends Component{
                                                 <Button 
                                                     style={{width:'80%', backgroundColor:'#FFA0A0', border:'none', color:'#21325E' }}
                                                     onClick = { () => {
-                                                        window.location.replace(`explore/${auction.id}`);
+                                                        window.location.replace(`explore/${auction._id}`);
                                                     }}
                                                 > Start Bid </Button>
                                                 
@@ -127,6 +155,41 @@ class Home extends Component{
                         )
                     })}
                 </Row>
+            );
+        }
+    }
+    render(){
+        
+        return(
+            <>
+            <Container>
+                <Row style={{padding:'20px'}}>
+                    <Col md={6}>
+                    <h1
+                    style={{ fontWeight:'bolder'}}
+                > Start Bid  </h1>
+                    </Col>
+                    <Col md={6} style={{textAlign:'right'}}>
+                        <Dropdown style={{margin:'10px'}}>
+                        <Dropdown.Toggle id="auction-filter"
+                            style={{paddingLeft:'20px', paddingRight:'20px', backgroundColor:'#21325E'}}
+                        >
+                            {this.state.auctionFilterActive}
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'All'})}}>All</Dropdown.Item>
+                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'Live'})}}>Live</Dropdown.Item>
+                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'Upcoming'})}}>Upcoming</Dropdown.Item>
+                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'Ended'})}}>Ended</Dropdown.Item>
+                        </Dropdown.Menu>
+                        </Dropdown>
+                    </Col>
+                </Row>
+
+                <h4 style={{marginLeft:'20px'}}>{this.state.auctionFilterActive} Auctions</h4> 
+                {this.addproducts()}
+                
             </Container>
             </>
         );
