@@ -36,6 +36,7 @@ class Home extends Component{
         }).then((res)=>{
             this.setState({auctions:res});
             this.setState({b:1});
+          
             
         })
     }
@@ -52,6 +53,7 @@ class Home extends Component{
         else{
             return(
                 <Row>
+                    <h1>{this.props.username}</h1>
                     {this.state.auctions.map((auction)=>{
                         return(
                             <Col md={4} 

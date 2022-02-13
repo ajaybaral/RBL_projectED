@@ -67,7 +67,7 @@ app.post("/login",async (req,res)=>{
     try {
         // Connect to the MongoDB cluster
        obj=req.body;
-       
+       console.log("hiiii")
         const result=await finduser(client,obj.name);
         var finalans={};
         
