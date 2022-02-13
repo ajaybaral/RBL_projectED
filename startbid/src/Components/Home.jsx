@@ -77,7 +77,7 @@ class Home extends Component{
                                         <Row style={{padding:'20px'}}>
                                             <Col md={6} style={{}}>
                                                 <h5> Current Bid </h5>
-                                                <h5 style={{fontWeight:'bolder'}}> 112 ETH 
+                                                <h5 style={{fontWeight:'bolder'}}> {auction.price} ETH 
                                                 <FaEthereum style={{color:'#21325E'}}/>
                                                 </h5>
                                             </Col>
@@ -89,12 +89,12 @@ class Home extends Component{
                                         <Row style={{textAlign:'center', paddingBottom:'20px'}}>
                                             <Col md={6} style={{}}>
                                                 
-                                                <Button 
+                                                <Button  
                                                     style={{width:'80%', backgroundColor:'#FFA0A0', border:'none', color:'#21325E' }}
                                                     onClick = { () => {
                                                         window.location.replace(`explore/${auction._id}`);
                                                     }}
-                                                > Start Bid </Button>
+                                                > Place bid </Button>
                                                 
                                             </Col>
                                             <Col md={6}>
