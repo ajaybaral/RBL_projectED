@@ -41,12 +41,15 @@ class Authentication extends Component{
         body:JSON.stringify(key)
         }).then((res)=>{
             return res.json();
-        }).then((res)=>{
+        }).then(async(res)=>{
             if(res.success==1)
             {
               alert("nice");
-              this.props.func(this.state.lusermail.split("@")[0]);
-              window.location.replace("http://localhost:3000/explore");
+            
+              
+             
+              document.querySelector("#name").innerHTML=this.state.lusermail.split("@")[0]
+              await this.props.func(this.state.lusermail.split("@")[0]);
             }
 
         })

@@ -9,14 +9,17 @@ class Main extends Component{
     constructor(props){
         super(props);
         this.state = {
-           username:""
+           username:"dummy",
+           cnt:0
         }
         this.setname=this.setname.bind(this);
+        
       
     }
     setname(name)
     {
         this.setState({username:name});
+        alert(this.state.username);
     }
     render(){
         const getParam = ({match}) => {
@@ -30,7 +33,7 @@ class Main extends Component{
         }
         return(
             <>
-                <NavBar />
+               
                 <BrowserRouter>
                 <Switch>
                     <Route path="/explore/:productId">
@@ -44,7 +47,7 @@ class Main extends Component{
                     </Route>
                     
                     <Route path="/">
-                        <Home /> 
+                        <Home username={this.state.username} /> 
                     </Route>
                 
                 

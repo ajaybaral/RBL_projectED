@@ -47,6 +47,7 @@ class NavBar extends Component {
                 </div>
                 <div className="navdiv navstyle ">
                   <Nav.Link 
+                  id="name"
                   style={{color:"white", fontWeight:"bolder", marginRight:'30px'}}
                   href="/authenticate" className=" navlinks">
                     Logout

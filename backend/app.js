@@ -100,15 +100,29 @@ io.on('connection', socket => {
       
         var myquery = { _id:data["id"] };
         var newvalues = { $set: {price:parseInt(data["news"]) } };
+        var address =data["address"];
 
         const result=await client.db("Auction_Platform").collection("auctions").updateOne(myquery, newvalues, function(err, res) {
             if (err) throw err;
             console.log("1 document updated");
           
           });
+          var q= await find(client,data["id"]);
+        
+          var bid_count=parseInt(q["bidcount"]);
+         console.log(q);
+         console.log(q.link);
+        // newvalues = { $set: {bid_count:bid_count } };
+        
+
+        // const result2=await client.db("Auction_Platform").collection("auctions").updateOne(myquery, newvalues, function(err, res) {
+        //     if (err) throw err;
+        //     console.log("1 document updated");
+          
+        //   });
+
           io.emit("message",data);
-        console.log(data["news"]);
-       
+        
     })
 
    
@@ -134,7 +148,7 @@ async function find(client,id)
     console.log(id);
     const cursor = await client.db("Auction_Platform").collection("auctions").findOne({"_id":id});
     const j=JSON.stringify(cursor);
-  
+  console.log(j.bidcount)
   return j;
 }
 async function finduser(client,username)
