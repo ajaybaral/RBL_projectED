@@ -55,7 +55,7 @@ class Home extends Component{
             });
         }
 
-        var address = "0xa5d917241Cf5b3311727B6e897C32A11938Af979";
+        var address = "0x6d7D3d587e2640285B9b3c3E9fd27b12e409934D";
         const abi = [
             {
                 "anonymous": false,
@@ -83,11 +83,6 @@ class Home extends Component{
                     {
                         "internalType": "string",
                         "name": "prod_title",
-                        "type": "string"
-                    },
-                    {
-                        "internalType": "string",
-                        "name": "owner_name",
                         "type": "string"
                     },
                     {
@@ -178,11 +173,6 @@ class Home extends Component{
                     {
                         "internalType": "string",
                         "name": "title",
-                        "type": "string"
-                    },
-                    {
-                        "internalType": "string",
-                        "name": "name",
                         "type": "string"
                     },
                     {
@@ -289,11 +279,6 @@ class Home extends Component{
                                 "type": "string"
                             },
                             {
-                                "internalType": "string",
-                                "name": "owner_name",
-                                "type": "string"
-                            },
-                            {
                                 "internalType": "bool",
                                 "name": "is_active",
                                 "type": "bool"
@@ -335,6 +320,47 @@ class Home extends Component{
                             }
                         ],
                         "internalType": "struct Auction.auction[]",
+                        "name": "",
+                        "type": "tuple[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "auction_id",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "view_all_transactions",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "bid_placer",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "bidded_value",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "order",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "winner",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct Auction.bidder[]",
                         "name": "",
                         "type": "tuple[]"
                     }
@@ -642,7 +668,7 @@ class Home extends Component{
                             this.setState({setshow:false})
                             var account_addr = this.state.account_addr;
                             var contract = this.state.contractval;
-                            contract.methods.list_new_auction(title, "USer", tod, price).send({from:account_addr}).then(function(result) {
+                            contract.methods.list_new_auction(title, tod, price).send({from:account_addr}).then(function(result) {
                                 alert("Transaction Successful");
                                 this.initialiseAddress();
                             });

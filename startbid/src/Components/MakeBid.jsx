@@ -52,7 +52,7 @@ class MakeBid extends Component{
         }
 
         
-        var address = "0xa5d917241Cf5b3311727B6e897C32A11938Af979";
+        var address = "0x6d7D3d587e2640285B9b3c3E9fd27b12e409934D";
         const abi = [
             {
                 "anonymous": false,
@@ -80,11 +80,6 @@ class MakeBid extends Component{
                     {
                         "internalType": "string",
                         "name": "prod_title",
-                        "type": "string"
-                    },
-                    {
-                        "internalType": "string",
-                        "name": "owner_name",
                         "type": "string"
                     },
                     {
@@ -175,11 +170,6 @@ class MakeBid extends Component{
                     {
                         "internalType": "string",
                         "name": "title",
-                        "type": "string"
-                    },
-                    {
-                        "internalType": "string",
-                        "name": "name",
                         "type": "string"
                     },
                     {
@@ -286,11 +276,6 @@ class MakeBid extends Component{
                                 "type": "string"
                             },
                             {
-                                "internalType": "string",
-                                "name": "owner_name",
-                                "type": "string"
-                            },
-                            {
                                 "internalType": "bool",
                                 "name": "is_active",
                                 "type": "bool"
@@ -332,6 +317,47 @@ class MakeBid extends Component{
                             }
                         ],
                         "internalType": "struct Auction.auction[]",
+                        "name": "",
+                        "type": "tuple[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "auction_id",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "view_all_transactions",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "bid_placer",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "bidded_value",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "order",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "winner",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct Auction.bidder[]",
                         "name": "",
                         "type": "tuple[]"
                     }
@@ -544,11 +570,22 @@ class MakeBid extends Component{
                                         onClick = { () => {
                                         
                                             var s={news:this.state.amount,id:this.state.product._id,address:this.state.account_addr};
-                                            if(parseInt(this.state.amount)<parseInt(this.state.product.price))
-                                            this.setState({auction_bid_modal:true})
-                                            else
-                                            socket.emit('change', s);
-                                            this.setState({starttime:Date.now()})
+                                            if(parseInt(this.state.amount)<parseInt(this.state.product.price)){
+                                                this.setState({auction_bid_modal:true})
+                                            }
+                                            else{
+                                                socket.emit('change', s);
+                                                this.setState({starttime:Date.now()})
+                                                var auc_id = this.state.product._id;
+                                                var ordervals = this.state.product.bid_count;
+                                                var biddedvals = parseInt(this.state.amount);
+                                                var account_addr = this.state.account_addr;
+                                                var contract = this.state.contractval;
+                                                contract.methods.make_bid(auc_id, ordervals, biddedvals).send({from:account_addr}).then(function(result) {
+                                                    alert("Transaction Successful");
+                                                    this.initialiseAddress();
+                                                });
+                                            }
             
                                         }}
                                     > Make a Bid </Button>
