@@ -9,7 +9,7 @@ class Main extends Component{
         const getParam = ({match}) => {
             return(
                 <>
-                    <MakeBid productId={match.params.productId} />
+                    <MakeBid productId={parseInt(match.params.productId)} />
                 
                 </>
     
