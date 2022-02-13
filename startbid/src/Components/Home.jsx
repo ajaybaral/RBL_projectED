@@ -4,6 +4,7 @@ import Bulb from 'react-bulb';
 import { auctions } from "../Resources/auctions";
 import {AiFillHeart} from 'react-icons/ai';
 import {FaEthereum} from 'react-icons/fa';
+import {TiPlus} from 'react-icons/ti';
 import {Link} from 'react-router-dom';
 
 class Home extends Component{
@@ -19,7 +20,8 @@ class Home extends Component{
             connectwalletstatus: 'Connect Wallet',
             account_addr: '',
             web3: null,
-            setshow:false
+            setshow:false,
+            contractval:'',
 
         };
         this.addproducts=this.addproducts.bind(this);
@@ -29,6 +31,348 @@ class Home extends Component{
    
  
     componentDidMount = () => {
+
+        var web3;
+        const Web3 = require('web3');
+        // web3 lib instance
+        if(typeof window.web3 !== 'undefined'){
+            web3 = new Web3(window.ethereum);
+            console.log(web3);
+            // get all accounts
+            // const accounts = await web3.eth.getAccounts();
+            this.setState({web3: web3});
+            this.connect(web3);
+            this.initialiseAddress(web3);
+        }
+        else{
+            alert('No web3? You should consider trying MetaMask!');
+        }
+
+        if(window.ethereum) {
+            window.ethereum.on('accountsChanged', () => {
+                this.initialiseAddress(web3);
+                console.log("Account changed");
+            });
+        }
+
+        var address = "0xa5d917241Cf5b3311727B6e897C32A11938Af979";
+        const abi = [
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "auction_id",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "listed_auction",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "auctions",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "prod_title",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "owner_name",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "is_active",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "amount_status",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "unique_id",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "time_of_creation",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "time_of_deadline",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "starting_bid_rate",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "winning_bid_amt",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "auction_owner",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "bidders",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "bid_placer",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "bidded_value",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "order",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "winner",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "title",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "days_to_deadline",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "starting_bid",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "list_new_auction",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "auction_id",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "orderval",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "bidded_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "make_bid",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "bid_placer",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "bidded_value",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "order",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "winner",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct Auction.bidder[]",
+                        "name": "",
+                        "type": "tuple[]"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "auction_id",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "make_payment",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "view_all_auctions",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "string",
+                                "name": "prod_title",
+                                "type": "string"
+                            },
+                            {
+                                "internalType": "string",
+                                "name": "owner_name",
+                                "type": "string"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "is_active",
+                                "type": "bool"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "amount_status",
+                                "type": "bool"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "unique_id",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "time_of_creation",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "time_of_deadline",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "starting_bid_rate",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "winning_bid_amt",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "auction_owner",
+                                "type": "address"
+                            }
+                        ],
+                        "internalType": "struct Auction.auction[]",
+                        "name": "",
+                        "type": "tuple[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "view_contract_balance",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "auction_id",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "withdraw_from_auction",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ];
+
+        var contract = new web3.eth.Contract(abi, address);
+
+        this.setState({contractval: contract});
      
         setInterval(async() => {
             await this.setState({bulbColorIndex: (this.state.bulbColorIndex+1)%2});
@@ -49,6 +393,45 @@ class Home extends Component{
         })
     }
 
+    initialiseAddress(web3) {
+
+        web3.eth.getAccounts().then((accounts) => {
+
+            var account_addr = accounts[0];
+    
+            this.setState({account_addr: accounts[0]});
+    
+            if(!account_addr) {
+                
+                this.setState({connectwalletstatus: 'Connect Wallet'});
+                return;
+            }
+    
+            const len = account_addr.length;
+            const croppedAddress = account_addr.substring(0,6) + "..." + account_addr.substring(len-4, len);
+    
+            web3.eth.getBalance(account_addr).then((balance) => {
+    
+                var account_bal = (Math.round(web3.utils.fromWei(balance) * 100) / 100);
+                var temp = croppedAddress + " (" + account_bal + " ETH)";
+                this.setState({connectwalletstatus: temp});
+            });
+        });
+    }
+
+    connect(web3) {
+
+        window.ethereum
+        .request({ method: 'eth_requestAccounts' })
+        .then(this.initialiseAddress(web3))
+        .catch((err) => {
+        if (err.code === 4001) {
+            alert('Please connect to MetaMask.');
+        } else {
+            console.error(err);
+        }
+        });
+    }
     unixToDate(unix_timestamp) {
         unix_timestamp=parseInt(unix_timestamp);
         var date = new Date(unix_timestamp * 1000);
@@ -60,14 +443,13 @@ class Home extends Component{
         if(this.state.b==0)
         {
             return( 
-                <Spinner style={{marginLeft:"50%",marginTop:"20%",height:"70px",width:"70px"}}  animation="grow" role="status">
+                <Spinner style={{marginLeft:"40%",marginTop:"10%",height:"70px",width:"70px"}}  animation="grow" role="status">
                 </Spinner>
             )
         }
         else{
             return(
                 <Row>
-                    
                     
                     {this.state.auctions.map((auction)=>{
                         return(
@@ -152,6 +534,7 @@ class Home extends Component{
                 var account_bal = (Math.round(web3.utils.fromWei(balance) * 100) / 100);
                 var temp = croppedAddress + " (" + account_bal + " ETH)";
                 this.setState({connectwalletstatus: temp});
+                console.log(temp);
             });
         });
     }
@@ -176,52 +559,32 @@ class Home extends Component{
             <>
             <Container>
          
-                <Row style={{padding:'20px'}}>
-                    <Col md={6}>
+                <Row style={{paddingTop:'20px'}}>
+                    <Col md={9}>
                     <h1
-                    style={{ fontWeight:'bolder'}}
+                    style={{ fontWeight:'bolder', paddingLeft: '20px'}}
                 > Start Bid  </h1>
                     </Col>
-                    <Col md={6} style={{textAlign:'right'}}>
-                        <Button onClick={
-                            () => {
-                                const Web3 = require('web3');
-                                // web3 lib instance
-                                if(typeof window.web3 !== 'undefined'){
-                                    const web3 = new Web3(window.ethereum);
-                                    // get all accounts
-                                    // const accounts = await web3.eth.getAccounts();
-                                    this.setState({web3: web3});
-                                    this.connect(web3);
-                                    this.initialiseAddress(web3);
-                                }
-                                else{
-                                    alert('No web3? You should consider trying MetaMask!');
-                                }
-                            }
-                        }>{this.state.connectwalletstatus}</Button>
-                        <Dropdown style={{margin:'10px'}}>
-                        <Dropdown.Toggle id="auction-filter"
-                            style={{paddingLeft:'20px', paddingRight:'20px', backgroundColor:'#21325E'}}
-                        >
-                            {this.state.auctionFilterActive}
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu>
-                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'All'})}}>All</Dropdown.Item>
-                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'Live'})}}>Live</Dropdown.Item>
-                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'Upcoming'})}}>Upcoming</Dropdown.Item>
-                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'Ended'})}}>Ended</Dropdown.Item>
-                        </Dropdown.Menu>
-                        </Dropdown>
+                    <Col md={3} style={{textAlign:'right'}}>
+                    <Button className= "authenticate-btn-active" 
+                        style={{height:'3rem'}} >{this.state.connectwalletstatus}
+                    </Button>
                     </Col>
                 </Row>
+                
+                <Row>
+                <Col md={6}>
 
-                <h4 style={{marginLeft:'20px'}}>{this.state.auctionFilterActive} Auctions</h4> 
-                <Button onClick={()=>{
+                <h4 style={{marginLeft:'20px'}}>Live Auctions</h4> 
+                </Col>
+                <Col md={6} style={{textAlign:'right'}}>
+                <Button 
+                    style={{backgroundColor:'#FFA0A0', border:'none'}}
+                    onClick={()=>{
                      this.setState({setshow:true})
-                }}>Create new Auction</Button>
-
+                }}> <span style={{fontSize:'20px'}} > <TiPlus /> </span>New Auction</Button>
+                </Col>
+                </Row>
                 
                 <Modal show={this.state.setshow}>
             <Modal.Header >
@@ -275,6 +638,13 @@ class Home extends Component{
                                 'Content-Type' : 'application/json'
                             },
                             body:JSON.stringify(key)
+                            })
+                            this.setState({setshow:false})
+                            var account_addr = this.state.account_addr;
+                            var contract = this.state.contractval;
+                            contract.methods.list_new_auction(title, "USer", tod, price).send({from:account_addr}).then(function(result) {
+                                alert("Transaction Successful");
+                                this.initialiseAddress();
                             });
                             alert("hi");
                             window.location.href="http://localhost:3000/explore";

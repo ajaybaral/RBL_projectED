@@ -27,9 +27,13 @@ class Authentication extends Component{
         
         
     }
+    handleSignup(){
+        var newUser = {
+            
+        }
+    }
     handleLogin()
     {
-        alert("hi")
         console.log(this.state.lusermail);
         var key={name:this.state.lusermail.split("@")[0],password:this.state.lpassword};
         
@@ -44,12 +48,8 @@ class Authentication extends Component{
         }).then(async(res)=>{
             if(res.success==1)
             {
-              alert("nice");
-            
-              
-             
-              document.querySelector("#name").innerHTML=this.state.lusermail.split("@")[0]
-              await this.props.func(this.state.lusermail.split("@")[0]);
+                document.querySelector("#name").innerHTML=this.state.lusermail.split("@")[0]
+                await this.props.func(this.state.lusermail.split("@")[0]);
             }
 
         })
@@ -83,9 +83,7 @@ class Authentication extends Component{
                         >
                             Login
                         </Button>
-                        <Button variant="light" type="submit" style={{}}>
-                            Google 
-                        </Button>
+
                     </Form>
                 </>
             );
@@ -126,9 +124,6 @@ class Authentication extends Component{
                         >
                             Create Account
                         </Button>
-                        <Button variant="light" type="submit" style={{}}>
-                            Sign in with Google 
-                        </Button>
                     </Form>
                 </>
             );
@@ -162,7 +157,7 @@ class Authentication extends Component{
                 style={{objectFit:'cover', position:'absolute', zIndex:'-1', opacity:'1'}}
             />
             <Row>
-                <Col md={7} style={{padding:'100px', color:'white'}}>
+                <Col md={7} style={{padding:'80px', color:'white'}}>
                     <h1 
                     style={{fontSize:'500%', fontWeight:'bolder'}}>Value For Your Valuables.</h1> 
                     
@@ -174,7 +169,7 @@ class Authentication extends Component{
                 </Col>
                 <Col md={5} style={{}}>
                     <Container fluid 
-                    style={{borderRadius:'10px', backgroundColor:'white', width:'70%', padding:'20px', marginTop:'150px'}}>
+                    style={{borderRadius:'10px', backgroundColor:'white', width:'70%', padding:'20px', marginTop:'100px'}}>
                     <Row style={{marginTop:"30px", }}>
                         <Col md={6}> 
                             <Button onClick={this.login} className="btn-lg authenticate-btn authenticate-btn-active" id='login-btn'> 
