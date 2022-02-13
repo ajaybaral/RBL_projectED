@@ -27,9 +27,13 @@ class Authentication extends Component{
         
         
     }
+    handleSignup(){
+        var newUser = {
+            
+        }
+    }
     handleLogin()
     {
-        alert("hi")
         console.log(this.state.lusermail);
         var key={name:this.state.lusermail.split("@")[0],password:this.state.lpassword};
         
@@ -44,12 +48,8 @@ class Authentication extends Component{
         }).then(async(res)=>{
             if(res.success==1)
             {
-              alert("nice");
-            
-              
-             
-              document.querySelector("#name").innerHTML=this.state.lusermail.split("@")[0]
-              await this.props.func(this.state.lusermail.split("@")[0]);
+                document.querySelector("#name").innerHTML=this.state.lusermail.split("@")[0]
+                await this.props.func(this.state.lusermail.split("@")[0]);
             }
 
         })
