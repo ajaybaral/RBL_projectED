@@ -56,6 +56,7 @@ class MakeBid extends Component{
         return(
             <>
             <Container>
+                
             <Row style={{marginTop:'20px'}}>   
                 <Col>
                 <Breadcrumb>
