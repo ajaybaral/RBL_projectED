@@ -29,12 +29,15 @@ class Authentication extends Component{
         
     }
     handleSignup(){
+        if(this.state.lpassword !== this.state.sconfirmpassword){
+            alert('Password Mismatch');
+            return;
+        }
         var newUser = {
             username: this.state.lusermail.split("@")[0],
             password: this.state.lpassword
         }
         console.log(newUser);
-        alert("signup");
         fetch('http://localhost:8000/signup',{
             method: 'POST',
             headers: {
@@ -69,6 +72,9 @@ class Authentication extends Component{
                 document.querySelector("#name").innerHTML=this.state.lusermail.split("@")[0]
                 await this.props.func(this.state.lusermail.split("@")[0]);
                 window.location.href = 'http://localhost:3000/explore';
+            }
+            else{
+                alert('Incorrect Username/Password');
             }
 
         })
