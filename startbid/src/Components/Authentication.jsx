@@ -68,7 +68,7 @@ class Authentication extends Component{
             {
                 document.querySelector("#name").innerHTML=this.state.lusermail.split("@")[0]
                 await this.props.func(this.state.lusermail.split("@")[0]);
-                window.location.href('/explore');
+                window.location.href = 'http://localhost:3000/explore';
             }
 
         })

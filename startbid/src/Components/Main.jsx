@@ -19,7 +19,6 @@ class Main extends Component{
     setname(name)
     {
         this.setState({username:name});
-        alert(this.state.username);
     }
     render(){
         const getParam = ({match}) => {
