@@ -433,6 +433,7 @@ class Home extends Component{
         });
     }
     unixToDate(unix_timestamp) {
+        unix_timestamp=parseInt(unix_timestamp);
         var date = new Date(unix_timestamp * 1000);
         return date.getUTCDate().toString() + '/' + date.getUTCMonth().toString()+1 + '/' + date.getFullYear().toString();
     }
@@ -481,7 +482,7 @@ class Home extends Component{
                                             </Col>
                                             <Col md={6}>
                                                 <h5> Expiring on</h5>
-                                                <h5 style={{fontWeight:'bolder'}}>{auction.ending_date}</h5>
+                                                <h5 style={{fontWeight:'bolder'}}>{this.unixToDate(auction.ending_date)}</h5>
                                             </Col>
                                         </Row>
                                         <Row style={{textAlign:'center', paddingBottom:'20px'}}>
@@ -578,7 +579,7 @@ class Home extends Component{
                 </Col>
                 <Col md={6} style={{textAlign:'right'}}>
                 <Button 
-                    style={{backgroundColor:'#FFA0A0', border:'none'}}
+                    style={{backgroundColor:'#FFA0A0', color:'#21325E',border:'none'}}
                     onClick={()=>{
                      this.setState({setshow:true})
                 }}> <span style={{fontSize:'20px'}} > <TiPlus /> </span>New Auction</Button>
@@ -619,18 +620,19 @@ class Home extends Component{
                     </Form.Group>
                     
                     
-                    <Button onClick={()=>{
+                    <Button onClick={async()=>{
                         var title=document.getElementById("title").value;
                         var price=document.getElementById("Price").value;
                         var description=document.getElementById("Description").value;
                         var link=document.getElementById("link").value;
-                        var tod=parseInt(document.getElementById("tod").value);
-                        
+                        var tod=document.getElementById("tod").value;
+                        tod=parseInt(tod);
+                        tod=Date.now()+(tod*86400000)
                         
                         var key={title:title,price:price,description:description,link:link,tod:tod};
                         console.log(key)
                                 
-                            fetch('http://localhost:8000/addauction',{
+                            await fetch('http://localhost:8000/addauction',{
                             method: 'POST',
                             headers: {
                                 'Content-Type' : 'application/json'
@@ -644,10 +646,9 @@ class Home extends Component{
                                 alert("Transaction Successful");
                                 this.initialiseAddress();
                             });
-                        }
-                        } variant="primary" >
-
-                        
+                            alert("hi");
+                            window.location.href="http://localhost:3000/explore";
+                        }} variant="primary" >
                         Submit
                     </Button>
                     </Form>

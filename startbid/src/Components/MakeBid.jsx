@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { auctions } from "../Resources/auctions";
-import { Row, Col, Image, Button, Container, Breadcrumb, BreadcrumbItem, Modal} from 'react-bootstrap';
+import { Row, Col, Image, Button, Container, Breadcrumb, BreadcrumbItem, Modal,Jumbotron} from 'react-bootstrap';
 import {FaEthereum} from 'react-icons/fa';
 import io from 'socket.io-client'
 var endpoint="http://localhost:4000";
@@ -23,6 +23,7 @@ class MakeBid extends Component{
             setshow:false,
             contractval:'',
         };
+        this.rendercomponent=this.rendercomponent.bind(this);
     }
 
     componentDidMount()
@@ -391,7 +392,8 @@ class MakeBid extends Component{
         
                 prod2["price"]=data['news'];
                 prod2["bid_count"]=data['bidcount'];
-                console.log(prod2['price'])
+                console.log(prod2)
+
                 this.setState({product:prod2});
                 this.setState({endtime:Date.now()})
                 var latencyval = this.state.endtime - this.state.starttime;
@@ -399,7 +401,7 @@ class MakeBid extends Component{
 
          });
     }
-    
+
     initialiseAddress(web3) {
 
         web3.eth.getAccounts().then((accounts) => {
@@ -439,47 +441,15 @@ class MakeBid extends Component{
         }
         });
     }
-
-
-
-    render(){
-        return(
-            <>
-            <Container>
-                
-            <Row style={{marginTop:'20px'}}>   
-                <Col md={9}>
-                <Breadcrumb>
-                    <BreadcrumbItem href="/explore">Explore</BreadcrumbItem>
-                    <BreadcrumbItem active>{this.state.product.title}</BreadcrumbItem>
-                </Breadcrumb>
-                </Col>
-                <Col md={3}>
-                <Button style={{height:'3rem'}} >{this.state.connectwalletstatus}</Button>
-                </Col>
-            </Row>
-            <Row style={{marginTop:'30px'}}>
-                <Col md={5}>
-                    <Image src={this.state.product.link} height='350px' width='350px'
-                        style={{margin:'50px', objectFit:'cover'}}
-                       />
-                </Col>
-                <Col md={7} style={{padding:'50px'}}>
-                    <Row> 
-                        <Col md={1} style={{}}>
-                        
-                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="50" cy="50" r="30" className="live-icon"
-                            /> 
-                        </svg></Col>
-                        <Col md={11} style={{paddingLeft:'0px'}}>
-                        <h1 style={{fontWeight:'bolder',paddingLeft:'0px'}}> 
-                        
-                        {this.state.product.title} </h1>
-                        </Col>
-                    </Row>
-
-                            <Modal show={this.state.auction_bid_modal}>
+    rendercomponent()
+    {
+        if(parseInt(Date.now()/1000)<this.state.product.ending_date)
+        {
+            console.log(Date.now())
+            console.log(this.state.product.ending_date);
+            return(
+                <>
+                <Modal show={this.state.auction_bid_modal}>
                     <Modal.Header >
                     <Modal.Title>Invalid Bid</Modal.Title>
                     </Modal.Header>
@@ -487,36 +457,27 @@ class MakeBid extends Component{
                     <p>Your bid is less than the current bid</p>
                     </Modal.Body>
                     <Modal.Footer>
-                    <Button variant="secondary" onClick={()=>{this.setState({auction_bid_modal:false})
-                    document.getElementById("bidinput").value="";
-                }}>
-                    Close
-                </Button>
+                        <Button variant="secondary" onClick={()=>{this.setState({auction_bid_modal:false})
+                        document.getElementById("bidinput").value="";
+                    }}>
+                        Close
+                    </Button>
                 
                     </Modal.Footer>
                 </Modal>
                 
-                    
-                    <h5> {this.state.product.description} </h5>
-                    <hr /> 
-                    <h3 style={{marginTop:'30px'}}> Current Bid : <strong style={{color:'green'}}>{this.state.product.price}</strong> <FaEthereum /></h3>
-                    <h5> Number of bidders : <strong> {this.state.product.bid_count} </strong></h5>
-                    <h5> Bidders Rate : <strong> 7 / Hr </strong></h5>
-                    <hr />
-                    
-                    <Row>
-                        <Col md={3}>
-                            <input id="bidinput" onChange={(e)=>{
-                                this.setState({amount:e.target.value})
-                            }} type='number' style={{height:'45px',width:'100%', fontSize:'30px', display:'inline'}} >
-                                
-                            </input> 
-                            
+                <Container>
+                    <Row style={{marginTop:'20px'}}>   
+                        <Col md={9}>
+                            <Breadcrumb>
+                                <BreadcrumbItem href="/explore">Explore</BreadcrumbItem>
+                                <BreadcrumbItem active>{this.state.product.title}</BreadcrumbItem>
+                            </Breadcrumb>
                         </Col>
                         
-                        <Col md={7}>
-                        <Button  className="btn-lg"
-                            style={{width:'90%', backgroundColor:'#FFA0A0', fontWeight:'bolder', border:'none', color:'#21325E' }}
+                        <Col md={3}>
+                            <Button 
+                            style={{width:'90%', height:'45px', backgroundColor:'#FFA0A0', fontWeight:'bolder', border:'none', color:'#21325E' }}
                             onClick = { () => {
                               
                                 var s={news:this.state.amount,id:this.state.product._id,address:this.state.account_addr};
@@ -525,16 +486,90 @@ class MakeBid extends Component{
                                 else
                                 socket.emit('change', s);
                                 this.setState({starttime:Date.now()})
+                            }}> 
+                            {this.state.connectwalletstatus}
+                            </Button>                     
+                         </Col>
+                    </Row>
+                    <Row style={{marginTop:'30px'}}>
+                        <Col md={5}>
+                            <Image src={this.state.product.link} height='350px' width='350px'
+                                style={{margin:'50px', objectFit:'cover'}}
+                            />
+                        </Col>
+                        <Col md={7} style={{padding:'50px'}}>
+                            <Row> 
+                                <Col md={1} style={{}}>
+                                
+                                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="50" cy="50" r="30" className="live-icon"
+                                    /> 
+                                </svg></Col>
+                                <Col md={11} style={{paddingLeft:'0px'}}>
+                                <h1 style={{fontWeight:'bolder',paddingLeft:'0px'}}> 
+                                
+                                {this.state.product.title} </h1>
+                                </Col>
+                            </Row>
 
-                            }}
-                        > Make a Bid </Button>
                         
+            
+                
+                            <h5> {this.state.product.description} </h5>
+                            <hr /> 
+                            <h3 style={{marginTop:'30px'}}> Current Bid : <strong style={{color:'green'}}>{this.state.product.price}</strong> <FaEthereum /></h3>
+                            <h5> Number of bidders : <strong> {this.state.product.bid_count} </strong></h5>
+                            <h5> Bidders Rate : <strong> 7 / Hr </strong></h5>
+                            <hr />
+                
+                            <Row>
+                                <Col md={3}>
+                                    <input id="bidinput" onChange={(e)=>{
+                                        this.setState({amount:e.target.value})
+                                    }} type='number' style={{height:'45px',width:'100%', fontSize:'30px', display:'inline'}} >
+                                        
+                                    </input> 
+                                    
+                                </Col>
+                    
+                                <Col md={7}>
+                                    <Button  className="btn-lg"
+                                        style={{width:'90%', backgroundColor:'#FFA0A0', fontWeight:'bolder', border:'none', color:'#21325E' }}
+                                        onClick = { () => {
+                                        
+                                            var s={news:this.state.amount,id:this.state.product._id,address:this.state.account_addr};
+                                            if(parseInt(this.state.amount)<parseInt(this.state.product.price))
+                                            this.setState({auction_bid_modal:true})
+                                            else
+                                            socket.emit('change', s);
+                                            this.setState({starttime:Date.now()})
+            
+                                        }}
+                                    > Make a Bid </Button>
+                    
+                                </Col>
+                            </Row>
+                        <p>Measured latency: {this.state.latency} ms</p>
                         </Col>
                     </Row>
-                   <p>Measured latency: {this.state.latency} ms</p>
-                </Col>
-            </Row>
-            </Container>
+                </Container>
+                </>
+            );
+        }
+        else{
+            return(
+                <div style={{textAlign:"center"}}>
+           <h1>Auction over</h1>
+           <h1>Winner is {this.state.product.winner_address} </h1>
+           </div>
+            );
+        }
+    }
+
+    render(){
+        return(
+            <>
+           {this.rendercomponent()}
             </>
         )
     };
