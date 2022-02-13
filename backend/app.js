@@ -90,6 +90,33 @@ app.post("/login",async (req,res)=>{
     }
    
 })
+app.post("/addauction",async (req,res)=>{
+    try {
+        // Connect to the MongoDB cluster
+        const cursor = await client.db("Auction_Platform").collection("auctions").find();
+        const arr= await cursor.toArray();
+       
+      
+       
+       var obj=req.body;
+       obj["price"]=parseInt(obj["price"]);
+       obj["tod"]=parseInt(obj["tod"]);
+       obj["_id"]=arr.length;
+       obj["winner_address"]="";
+       console.log(obj);
+
+
+        const result = await client.db("Auction_Platform").collection("auctions").insertOne(req.body);
+         console.log(result)
+    } catch (e) {
+        console.error(e);
+    } finally {
+        // Close the connection to the MongoDB cluster
+       //  await client.close();
+    
+    }
+   
+})
 
 io.on('connection', socket => {
     console.log("connected")

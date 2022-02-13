@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Container, Row, Col, Card, Button, Dropdown ,Spinner } from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Dropdown ,Spinner,Modal,Form } from "react-bootstrap";
 import Bulb from 'react-bulb';
 import { auctions } from "../Resources/auctions";
 import {AiFillHeart} from 'react-icons/ai';
@@ -15,12 +15,15 @@ class Home extends Component{
             auctionFilter: ['Live', 'Upcoming', 'Ended', 'All'],
             auctionFilterActive: 'Live',
             auctions:[],
-            b:0
+            b:0,
+            setshow:false
 
         };
         this.addproducts=this.addproducts.bind(this);
+      
     }
-    
+   
+ 
     componentDidMount = () => {
      
         setInterval(async() => {
@@ -162,6 +165,76 @@ class Home extends Component{
                 </Row>
 
                 <h4 style={{marginLeft:'20px'}}>{this.state.auctionFilterActive} Auctions</h4> 
+                <Button onClick={()=>{
+                     this.setState({setshow:true})
+                }}>Create new Auction</Button>
+
+                
+                <Modal show={this.state.setshow}>
+            <Modal.Header >
+              <Modal.Title>Enter Auction's details</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <div >
+                <Form>
+                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                        <Form.Label>Title</Form.Label>
+                        <Form.Control id="title" type="text"  />
+                        
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                        <Form.Label>Price</Form.Label>
+                        <Form.Control  id="Price" type="text"  />
+                        
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                        <Form.Label>Description</Form.Label>
+                        <Form.Control  id="Description" type="text"  />
+                        
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                        <Form.Label>Enter Image Link</Form.Label>
+                        <Form.Control  id="link" type="text"  />
+                        
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                        <Form.Label>Duration of Auction</Form.Label>
+                        <Form.Control  id="tod" type="text"  />
+                        
+                    </Form.Group>
+                    
+                    
+                    <Button onClick={()=>{
+                        var title=document.getElementById("title").value;
+                        var price=document.getElementById("Price").value;
+                        var description=document.getElementById("Description").value;
+                        var link=document.getElementById("link").value;
+                        var tod=document.getElementById("tod").value;
+                        
+                        
+                        var key={title:title,price:price,description:description,link:link,tod:tod};
+                        console.log(key)
+                                
+                            fetch('http://localhost:8000/addauction',{
+                            method: 'POST',
+                            headers: {
+                                'Content-Type' : 'application/json'
+                            },
+                            body:JSON.stringify(key)
+                            });
+                        }} variant="primary" >
+                        Submit
+                    </Button>
+                    </Form>
+                </div>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={()=>{this.setState({setshow:false})}}>
+            Close
+          </Button>
+         
+            </Modal.Footer>
+          </Modal>
                 {this.addproducts()}
                 
             </Container>
