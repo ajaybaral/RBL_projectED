@@ -2,10 +2,15 @@ import { Component } from "react";
 import { Container, Row, Col, Card, Button, Dropdown ,Spinner,Modal,Form } from "react-bootstrap";
 import Bulb from 'react-bulb';
 import { auctions } from "../Resources/auctions";
+import {abi} from "../Resources/abi";
 import {AiFillHeart} from 'react-icons/ai';
 import {FaEthereum} from 'react-icons/fa';
 import {TiPlus} from 'react-icons/ti';
 import {Link} from 'react-router-dom';
+import io from 'socket.io-client'
+var endpoint="http://localhost:4000";
+
+const socket = io.connect(endpoint); //new change
 
 class Home extends Component{
     constructor(props){
@@ -27,6 +32,7 @@ class Home extends Component{
         this.addproducts=this.addproducts.bind(this);
         this.connect=this.connect.bind(this);
         this.initialiseAddress=this.initialiseAddress.bind(this);
+        this.unixToDate=this.unixToDate.bind(this);
     }
    
  
@@ -56,345 +62,6 @@ class Home extends Component{
         }
 
         var address = "0x6d7D3d587e2640285B9b3c3E9fd27b12e409934D";
-        const abi = [
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "auction_id",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "listed_auction",
-                "type": "event"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "auctions",
-                "outputs": [
-                    {
-                        "internalType": "string",
-                        "name": "prod_title",
-                        "type": "string"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "is_active",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "amount_status",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "unique_id",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "time_of_creation",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "time_of_deadline",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "starting_bid_rate",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "winning_bid_amt",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "auction_owner",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "bidders",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "bid_placer",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "bidded_value",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "order",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "winner",
-                        "type": "bool"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "string",
-                        "name": "title",
-                        "type": "string"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "days_to_deadline",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "starting_bid",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "list_new_auction",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "auction_id",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "orderval",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "bidded_value",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "make_bid",
-                "outputs": [
-                    {
-                        "components": [
-                            {
-                                "internalType": "address",
-                                "name": "bid_placer",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "bidded_value",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "order",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "bool",
-                                "name": "winner",
-                                "type": "bool"
-                            }
-                        ],
-                        "internalType": "struct Auction.bidder[]",
-                        "name": "",
-                        "type": "tuple[]"
-                    }
-                ],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "auction_id",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "make_payment",
-                "outputs": [
-                    {
-                        "internalType": "bool",
-                        "name": "",
-                        "type": "bool"
-                    }
-                ],
-                "stateMutability": "payable",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "view_all_auctions",
-                "outputs": [
-                    {
-                        "components": [
-                            {
-                                "internalType": "string",
-                                "name": "prod_title",
-                                "type": "string"
-                            },
-                            {
-                                "internalType": "bool",
-                                "name": "is_active",
-                                "type": "bool"
-                            },
-                            {
-                                "internalType": "bool",
-                                "name": "amount_status",
-                                "type": "bool"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "unique_id",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "time_of_creation",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "time_of_deadline",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "starting_bid_rate",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "winning_bid_amt",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "auction_owner",
-                                "type": "address"
-                            }
-                        ],
-                        "internalType": "struct Auction.auction[]",
-                        "name": "",
-                        "type": "tuple[]"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "auction_id",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "view_all_transactions",
-                "outputs": [
-                    {
-                        "components": [
-                            {
-                                "internalType": "address",
-                                "name": "bid_placer",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "bidded_value",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "order",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "bool",
-                                "name": "winner",
-                                "type": "bool"
-                            }
-                        ],
-                        "internalType": "struct Auction.bidder[]",
-                        "name": "",
-                        "type": "tuple[]"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "view_contract_balance",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "auction_id",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "withdraw_from_auction",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            }
-        ];
 
         var contract = new web3.eth.Contract(abi, address);
 
@@ -417,6 +84,15 @@ class Home extends Component{
           
             
         })
+
+        socket.on('message', data => {
+            console.log("recieved");
+            var currprodid = data["id"];
+            var allprods=this.state.auctions;
+            allprods[currprodid].price=data['news'];
+            allprods[currprodid].bid_count=data['bidcount'];
+            this.setState({auctions:allprods});
+         });
     }
 
     initialiseAddress(web3) {
@@ -459,9 +135,10 @@ class Home extends Component{
         });
     }
     unixToDate(unix_timestamp) {
-        unix_timestamp=parseInt(unix_timestamp);
-        var date = new Date(unix_timestamp * 1000);
-        return date.getUTCDate().toString() + '/' + date.getUTCMonth().toString()+1 + '/' + date.getFullYear().toString();
+        unix_timestamp = parseInt(unix_timestamp);
+        const timeStamp = unix_timestamp;
+        const date = new Date(timeStamp).toLocaleDateString('en-UK');
+        return date;
     }
 
     addproducts()
@@ -527,8 +204,6 @@ class Home extends Component{
                                             </Col>
                                         </Row>
                                         
-                                        
-                                        
                                 </Card>    
                             </Col>
                         )
@@ -537,6 +212,7 @@ class Home extends Component{
             );
         }
     }
+
 
     initialiseAddress(web3) {
 
@@ -641,7 +317,7 @@ class Home extends Component{
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Label>Duration of Auction</Form.Label>
-                        <Form.Control  id="tod" type="text"  />
+                        <Form.Control  id="ending_date" type="text"  />
                         
                     </Form.Group>
                     
@@ -651,14 +327,16 @@ class Home extends Component{
                         var price=document.getElementById("Price").value;
                         var description=document.getElementById("Description").value;
                         var link=document.getElementById("link").value;
-                        var tod=document.getElementById("tod").value;
-                        tod=parseInt(tod);
-                        tod=Date.now()+(tod*86400000)
+                        var ending_date=document.getElementById("ending_date").value;
+                        ending_date=parseInt(ending_date);
+                        console.log(ending_date);
+                        ending_date=parseInt(Date.now())+(ending_date*86400000)
+                        console.log(ending_date);
                         
-                        var key={title:title,price:price,description:description,link:link,tod:tod};
+                        var key={title:title,price:price,description:description,link:link,ending_date:ending_date};
                         console.log(key)
                                 
-                            await fetch('http://localhost:8000/addauction',{
+                            fetch('http://localhost:8000/addauction',{
                             method: 'POST',
                             headers: {
                                 'Content-Type' : 'application/json'
@@ -666,14 +344,13 @@ class Home extends Component{
                             body:JSON.stringify(key)
                             })
                             this.setState({setshow:false})
+                            var web3 = this.state.web3;
                             var account_addr = this.state.account_addr;
                             var contract = this.state.contractval;
-                            contract.methods.list_new_auction(title, tod, price).send({from:account_addr}).then(function(result) {
+                            contract.methods.list_new_auction(title, ending_date, price).send({from:account_addr}).then(function(result) {
                                 alert("Transaction Successful");
-                                this.initialiseAddress();
+                                window.location.href="http://localhost:3000/explore";
                             });
-                            alert("hi");
-                            window.location.href="http://localhost:3000/explore";
                         }} variant="primary" >
                         Submit
                     </Button>
@@ -688,7 +365,6 @@ class Home extends Component{
             </Modal.Footer>
           </Modal>
                 {this.addproducts()}
-                
             </Container>
             </>
         );
