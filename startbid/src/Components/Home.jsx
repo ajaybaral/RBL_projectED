@@ -22,6 +22,7 @@ class Home extends Component{
             await this.setState({bulbColorIndex: (this.state.bulbColorIndex+1)%2});
         }, 600);
     }
+
     render(){
         
         return(
@@ -34,6 +35,21 @@ class Home extends Component{
                 > Start Bid  </h1>
                     </Col>
                     <Col md={6} style={{textAlign:'right'}}>
+                        <Button onClick={
+                            () => {
+                                const Web3 = require('web3');
+                                // web3 lib instance
+                                if(typeof window.web3 !== 'undefined'){
+                                    const web3 = new Web3(window.ethereum);
+                                    // get all accounts
+                                    // const accounts = await web3.eth.getAccounts();
+                                    console.log(web3);
+                                }
+                                else{
+                                    alert('No web3? You should consider trying MetaMask!');
+                                }
+                            }
+                        }>Connect Wallet</Button>
                         <Dropdown style={{margin:'10px'}}>
                         <Dropdown.Toggle id="auction-filter"
                             style={{paddingLeft:'20px', paddingRight:'20px', backgroundColor:'#21325E'}}
