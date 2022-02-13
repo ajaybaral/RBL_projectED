@@ -632,7 +632,7 @@ class Home extends Component{
                         var key={title:title,price:price,description:description,link:link,tod:tod};
                         console.log(key)
                                 
-                            await fetch('http://localhost:8000/addauction',{
+                            fetch('http://localhost:8000/addauction',{
                             method: 'POST',
                             headers: {
                                 'Content-Type' : 'application/json'
@@ -645,9 +645,8 @@ class Home extends Component{
                             contract.methods.list_new_auction(title, "USer", tod, price).send({from:account_addr}).then(function(result) {
                                 alert("Transaction Successful");
                                 this.initialiseAddress();
+                                window.location.href="http://localhost:3000/explore";
                             });
-                            alert("hi");
-                            window.location.href="http://localhost:3000/explore";
                         }} variant="primary" >
                         Submit
                     </Button>

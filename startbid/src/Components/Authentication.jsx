@@ -40,7 +40,7 @@ class Authentication extends Component{
             body: JSON.stringify(newUser),
 
         }).then((response) => {
-            if(respose.ok) return response.json();
+            if(response.ok) return response.json();
         }).then(async(res) => {
             if(res.success == 1){
                 alert('Account Created Successfully \n Please Login to Continue');
