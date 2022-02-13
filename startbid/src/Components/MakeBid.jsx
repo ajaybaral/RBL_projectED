@@ -426,7 +426,11 @@ class MakeBid extends Component{
                 this.setState({endtime:Date.now()})
                 var latencyval = this.state.endtime - this.state.starttime;
                 this.setState({latency:latencyval});
-
+                var prod_id = this.state.product._id;
+                var contract = this.state.contractval;
+                contract.methods.view_all_transactions.call(prod_id).then(function(result) {
+                    console.log(result);
+                });
          });
     }
 
@@ -594,6 +598,7 @@ class MakeBid extends Component{
                             
                             <p>Measured latency: {this.state.latency} ms</p>
                             </Col>
+            
                         </Row>
                     </Container>
                     </>
