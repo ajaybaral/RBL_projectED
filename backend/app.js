@@ -24,7 +24,6 @@ const io = require('socket.io')(server, {
         methods: ['GET', 'POST']
     }
 })
-
 app.get("/home",async (req,res)=>{
     
     try {
@@ -122,7 +121,7 @@ app.post("/addauction",async (req,res)=>{
        
        var obj=req.body;
        obj["price"]=parseInt(obj["price"]);
-       obj["tod"]=parseInt(obj["tod"]);
+       obj["ending_date"]=parseInt(obj["ending_date"]);
        obj["_id"]=arr.length;
        obj["winner_address"]="";
        console.log(obj);
@@ -139,7 +138,7 @@ app.post("/addauction",async (req,res)=>{
     }
    
 })
-
+ 
 io.on('connection', socket => {
     console.log("connected")
     socket.on('change', async data => {
@@ -180,20 +179,12 @@ io.on('connection', socket => {
                 auction_id:auction_id_bidded,
                 order: new_bidcount
             };
-
-            // newvalues = { $set: {winner_address: bidder_address} };
-            // const result4=await client.db("Auction_Platform").collection("auctions").updateOne(myquery, newvalues, function(err, res) {
-            //     if (err) throw err;
-            //     console.log("1 document updated");
-              
-            //   });
            
             const result3 = await client.db("Auction_Platform").collection("transactions").insertOne(document);
         }
         
     })
 })
-
 
  server.listen(4000,()=>{
     console.log("listening 4000");
