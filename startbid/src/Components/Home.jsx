@@ -15,10 +15,15 @@ class Home extends Component{
             auctionFilter: ['Live', 'Upcoming', 'Ended', 'All'],
             auctionFilterActive: 'Live',
             auctions:[],
-            b:0
+            b:0,
+            connectwalletstatus: 'Connect Wallet',
+            account_addr: '',
+            web3: null,
 
         };
         this.addproducts=this.addproducts.bind(this);
+        this.connect=this.connect.bind(this);
+        this.initialiseAddress=this.initialiseAddress.bind(this);
     }
     
     componentDidMount = () => {
@@ -114,6 +119,47 @@ class Home extends Component{
             );
         }
     }
+
+    initialiseAddress(web3) {
+
+        web3.eth.getAccounts().then((accounts) => {
+
+            var account_addr = accounts[0];
+    
+            this.setState({account_addr: accounts[0]});
+    
+            if(!account_addr) {
+                
+                this.setState({connectwalletstatus: 'Connect Wallet'});
+                return;
+            }
+    
+            const len = account_addr.length;
+            const croppedAddress = account_addr.substring(0,6) + "..." + account_addr.substring(len-4, len);
+    
+            web3.eth.getBalance(account_addr).then((balance) => {
+    
+                var account_bal = (Math.round(web3.utils.fromWei(balance) * 100) / 100);
+                var temp = croppedAddress + " (" + account_bal + " ETH)";
+                this.setState({connectwalletstatus: temp});
+            });
+        });
+    }
+
+    connect(web3) {
+
+        window.ethereum
+        .request({ method: 'eth_requestAccounts' })
+        .then(this.initialiseAddress(web3))
+        .catch((err) => {
+        if (err.code === 4001) {
+            alert('Please connect to MetaMask.');
+        } else {
+            console.error(err);
+        }
+        });
+    }
+
     render(){
         
         return(
@@ -134,13 +180,15 @@ class Home extends Component{
                                     const web3 = new Web3(window.ethereum);
                                     // get all accounts
                                     // const accounts = await web3.eth.getAccounts();
-                                    console.log(web3);
+                                    this.setState({web3: web3});
+                                    this.connect(web3);
+                                    this.initialiseAddress(web3);
                                 }
                                 else{
                                     alert('No web3? You should consider trying MetaMask!');
                                 }
                             }
-                        }>Connect Wallet</Button>
+                        }>{this.state.connectwalletstatus}</Button>
                         <Dropdown style={{margin:'10px'}}>
                         <Dropdown.Toggle id="auction-filter"
                             style={{paddingLeft:'20px', paddingRight:'20px', backgroundColor:'#21325E'}}
