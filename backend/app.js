@@ -85,6 +85,33 @@ app.post("/login",async (req,res)=>{
     }
    
 })
+app.post("/signup",async (req,res)=>{
+    try {
+        console.log("hi")
+        // Connect to the MongoDB cluster
+       obj=req.body;
+       var userdata={username:obj.username,password:obj.password};
+
+       const result = await client.db("Auction_Platform").collection("Users").insertOne(userdata);
+        console.log(result);
+        var finalans={
+            'success': 1
+        };
+
+        res.send(JSON.stringify(finalans));
+       
+         
+    } catch (e) {
+        console.error(e);
+    } finally {
+        // Close the connection to the MongoDB cluster
+       //  await client.close();
+    
+    }
+   
+})
+
+
 app.post("/addauction",async (req,res)=>{
     try {
         // Connect to the MongoDB cluster
@@ -196,3 +223,4 @@ async function finduser(client,username)
     console.log(cursor);
     return cursor;
 }
+
