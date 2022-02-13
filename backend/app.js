@@ -33,7 +33,6 @@ app.get("/home",async (req,res)=>{
         
        
         const docs=await findall(client);
-        console.log(docs);
         res.send(docs);
     
     
@@ -51,7 +50,6 @@ app.post("/product",async (req,res)=>{
         // Connect to the MongoDB cluster
        
         const docs=await find(client,req.body.id);
-        console.log(docs);
         res.send(docs);
     
     
@@ -67,7 +65,6 @@ app.post("/login",async (req,res)=>{
     try {
         // Connect to the MongoDB cluster
        obj=req.body;
-       console.log("hiiii")
         const result=await finduser(client,obj.name);
         var finalans={};
         
@@ -77,7 +74,6 @@ app.post("/login",async (req,res)=>{
         }
         else
         finalans["success"]=0;
-      console.log(finalans)
         res.send(JSON.stringify(finalans));
        
          
@@ -94,38 +90,55 @@ app.post("/login",async (req,res)=>{
 io.on('connection', socket => {
     console.log("connected")
     socket.on('change', async data => {
-        console.log(data)
       
        
       
         var myquery = { _id:data["id"] };
         var newvalues = { $set: {price:parseInt(data["news"]) } };
-        var address =data["address"];
 
-        const result=await client.db("Auction_Platform").collection("auctions").updateOne(myquery, newvalues, function(err, res) {
-            if (err) throw err;
-            console.log("1 document updated");
-          
-          });
-          var q= await find(client,data["id"]);
-        
-          var bid_count=parseInt(q["bidcount"]);
-         console.log(q);
-         console.log(q.link);
-        // newvalues = { $set: {bid_count:bid_count } };
-        
+        var qval = await client.db("Auction_Platform").collection("auctions").findOne({"_id":data["id"]});
 
-        // const result2=await client.db("Auction_Platform").collection("auctions").updateOne(myquery, newvalues, function(err, res) {
-        //     if (err) throw err;
-        //     console.log("1 document updated");
-          
-        //   });
+        if(data["news"] > qval.price){
+            data["bidcount"]=qval.bid_count+1;
+            io.emit("message",data);
 
-          io.emit("message",data);
+            const result=await client.db("Auction_Platform").collection("auctions").updateOne(myquery, newvalues, function(err, res) {
+                if (err) throw err;
+                console.log("1 document updated");
+              
+              });
+              
+              var bidder_address =data["address"];
+              var bidcount = qval.bid_count;
+              var new_bidcount = bidcount+1;
+              newvalues = { $set: {bid_count: new_bidcount, winner_address:bidder_address} };
+            
+            const result2=await client.db("Auction_Platform").collection("auctions").updateOne(myquery, newvalues, function(err, res) {
+                if (err) throw err;
+                console.log("1 document updated");
+              
+              });
+            var amtbidded = data["news"];
+            var auction_id_bidded = data["id"];
+
+            var document={
+                bidder_address:bidder_address,
+                amount_bidded:amtbidded,
+                auction_id:auction_id_bidded,
+                order: new_bidcount
+            };
+
+            // newvalues = { $set: {winner_address: bidder_address} };
+            // const result4=await client.db("Auction_Platform").collection("auctions").updateOne(myquery, newvalues, function(err, res) {
+            //     if (err) throw err;
+            //     console.log("1 document updated");
+              
+            //   });
+           
+            const result3 = await client.db("Auction_Platform").collection("transactions").insertOne(document);
+        }
         
     })
-
-   
 })
 
 

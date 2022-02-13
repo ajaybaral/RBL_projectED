@@ -47,6 +47,11 @@ class Home extends Component{
         })
     }
 
+    unixToDate(unix_timestamp) {
+        var date = new Date(unix_timestamp * 1000);
+        return date.getUTCDate().toString() + '/' + date.getUTCMonth().toString()+1 + '/' + date.getFullYear().toString();
+    }
+
     addproducts()
     {
         if(this.state.b==0)
@@ -78,7 +83,7 @@ class Home extends Component{
                                             </Col>
                                             <Col md={4} style={{fontSize:'20px'}}>
                                                 <AiFillHeart style={{color:'#FFA0A0'}}/>
-                                                <span style={{marginLeft:'10px'}}>12 
+                                                <span style={{marginLeft:'10px'}}>{auction.bid_count} 
                                                 
                                                 </span>
                                             </Col>
@@ -91,8 +96,8 @@ class Home extends Component{
                                                 </h5>
                                             </Col>
                                             <Col md={6}>
-                                                <h5> Bid Ends In</h5>
-                                                <h5 style={{fontWeight:'bolder'}}> 12:07 </h5>
+                                                <h5> Expiring on</h5>
+                                                <h5 style={{fontWeight:'bolder'}}>{auction.ending_date}</h5>
                                             </Col>
                                         </Row>
                                         <Row style={{textAlign:'center', paddingBottom:'20px'}}>
