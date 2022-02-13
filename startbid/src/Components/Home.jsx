@@ -605,7 +605,7 @@ class Home extends Component{
                 </Col>
                 <Col md={6} style={{textAlign:'right'}}>
                 <Button 
-                    style={{backgroundColor:'#FFA0A0', color:'##21325E',border:'none'}}
+                    style={{backgroundColor:'#FFA0A0', color:'#21325E',border:'none'}}
                     onClick={()=>{
                      this.setState({setshow:true})
                 }}> <span style={{fontSize:'20px'}} > <TiPlus /> </span>New Auction</Button>
