@@ -16,6 +16,7 @@ class Authentication extends Component{
         }
         this.chooseLogin = this.chooseLogin.bind(this);
         this.handleLogin=this.handleLogin.bind(this);
+        this.handleSignup=this.handleSignup.bind(this);
     }
     componentDidMount = () => {
         setTimeout(() => {
@@ -29,9 +30,11 @@ class Authentication extends Component{
     }
     handleSignup(){
         var newUser = {
-            username: this.state.susermail.split("@")[0],
-            password: this.state.spassword
+            username: this.state.lusermail.split("@")[0],
+            password: this.state.lpassword
         }
+        console.log(newUser);
+        alert("signup");
         fetch('http://localhost:8000/signup',{
             method: 'POST',
             headers: {
@@ -51,7 +54,7 @@ class Authentication extends Component{
     {
         console.log(this.state.lusermail);
         var key={name:this.state.lusermail.split("@")[0],password:this.state.lpassword};
-        
+     
         fetch('http://localhost:8000/login',{
         method: 'POST',
         headers: {
@@ -65,6 +68,7 @@ class Authentication extends Component{
             {
                 document.querySelector("#name").innerHTML=this.state.lusermail.split("@")[0]
                 await this.props.func(this.state.lusermail.split("@")[0]);
+                window.location.href('/explore');
             }
 
         })
@@ -111,7 +115,7 @@ class Authentication extends Component{
                             <Form.Label style={{fontSize:"20px"}}>Email address</Form.Label>
                             <Form.Control style={{height:"45px"}} type="email" placeholder="Your Email" 
                             onChange={async(event) => {
-                                await this.setState({susermail: event.target.value});
+                                await this.setState({lusermail: event.target.value});
                             }}
                             />
                         </Form.Group>
@@ -120,7 +124,7 @@ class Authentication extends Component{
                             <Form.Label style={{fontSize:"20px", marginTop:"30px"}}>Password</Form.Label>
                             <Form.Control style={{height:"45px"}}  type="password" placeholder="Choose a Password"
                                 onChange={async(event) => {
-                                    await this.setState({spassword: event.target.value});
+                                    await this.setState({lpassword: event.target.value});
                                 }}
                              />
                         </Form.Group>

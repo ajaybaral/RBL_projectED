@@ -87,9 +87,13 @@ app.post("/login",async (req,res)=>{
 })
 app.post("/signup",async (req,res)=>{
     try {
+        console.log("hi")
         // Connect to the MongoDB cluster
        obj=req.body;
-        const result=await adduser(client,obj);
+       var userdata={username:obj.username,password:obj.password};
+
+       const result = await client.db("Auction_Platform").collection("Users").insertOne(userdata);
+        console.log(result);
         var finalans={
             'success': 1
         };
@@ -220,9 +224,3 @@ async function finduser(client,username)
     return cursor;
 }
 
-async function adduser(client,userdata)
-{
-    const cursor = await client.db("Auction_Platform").collection("Users").insertOne({newUser});
-    console.log(cursor);
-    return cursor;
-}
