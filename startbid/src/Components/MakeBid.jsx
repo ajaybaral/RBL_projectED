@@ -15,14 +15,13 @@ class MakeBid extends Component{
             amount:0,
             starttime:0,
             endtime:0,
-            address:"0x645",
             auction_bid_modal:false,
             latency:0,
             connectwalletstatus: 'Connect Wallet',
             account_addr: '',
             web3: null,
-            setshow:false
-
+            setshow:false,
+            contractval:'',
         };
     }
 
@@ -49,6 +48,326 @@ class MakeBid extends Component{
                 console.log("Account changed");
             });
         }
+
+        
+        var address = "0xa5d917241Cf5b3311727B6e897C32A11938Af979";
+        const abi = [
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "auction_id",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "listed_auction",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "auctions",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "prod_title",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "owner_name",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "is_active",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "amount_status",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "unique_id",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "time_of_creation",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "time_of_deadline",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "starting_bid_rate",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "winning_bid_amt",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "auction_owner",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "bidders",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "bid_placer",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "bidded_value",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "order",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "winner",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "title",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "days_to_deadline",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "starting_bid",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "list_new_auction",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "auction_id",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "orderval",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "bidded_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "make_bid",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "bid_placer",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "bidded_value",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "order",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "winner",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct Auction.bidder[]",
+                        "name": "",
+                        "type": "tuple[]"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "auction_id",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "make_payment",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "view_all_auctions",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "string",
+                                "name": "prod_title",
+                                "type": "string"
+                            },
+                            {
+                                "internalType": "string",
+                                "name": "owner_name",
+                                "type": "string"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "is_active",
+                                "type": "bool"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "amount_status",
+                                "type": "bool"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "unique_id",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "time_of_creation",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "time_of_deadline",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "starting_bid_rate",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "winning_bid_amt",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "auction_owner",
+                                "type": "address"
+                            }
+                        ],
+                        "internalType": "struct Auction.auction[]",
+                        "name": "",
+                        "type": "tuple[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "view_contract_balance",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "auction_id",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "withdraw_from_auction",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ];
+
+        var contract = new web3.eth.Contract(abi, address);
+
+        this.setState({contractval: contract});
         
         var key={id:this.props.productId};
         console.log(key);
@@ -200,7 +519,7 @@ class MakeBid extends Component{
                             style={{width:'90%', backgroundColor:'#FFA0A0', fontWeight:'bolder', border:'none', color:'#21325E' }}
                             onClick = { () => {
                               
-                                var s={news:this.state.amount,id:this.state.product._id,address:this.state.address};
+                                var s={news:this.state.amount,id:this.state.product._id,address:this.state.account_addr};
                                 if(parseInt(this.state.amount)<parseInt(this.state.product.price))
                                 this.setState({auction_bid_modal:true})
                                 else

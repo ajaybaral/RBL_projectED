@@ -29,8 +29,23 @@ class Authentication extends Component{
     }
     handleSignup(){
         var newUser = {
-            
+            username: this.state.susermail.split("@")[0],
+            password: this.state.spassword
         }
+        fetch('http://localhost:8000/signup',{
+            method: 'POST',
+            headers: {
+                'Content-Type' : 'application/json'
+            },
+            body: JSON.stringify(newUser),
+
+        }).then((response) => {
+            if(respose.ok) return response.json();
+        }).then(async(res) => {
+            if(res.success == 1){
+                alert('Account Created Successfully \n Please Login to Continue');
+            }
+        })
     }
     handleLogin()
     {
