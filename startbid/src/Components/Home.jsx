@@ -243,7 +243,7 @@ class Home extends Component{
                 > Start Bid  </h1>
                     </Col>
                     <Col md={6}>
-                        <h1>hello</h1>
+                        <h1>{this.state.connectwalletstatus}</h1>
                     </Col>
                 </Row>
                 
