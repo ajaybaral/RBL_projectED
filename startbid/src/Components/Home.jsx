@@ -22,6 +22,7 @@ class Home extends Component{
     }
     
     componentDidMount = () => {
+     
         setInterval(async() => {
             await this.setState({bulbColorIndex: (this.state.bulbColorIndex+1)%2});
         }, 600);
@@ -53,7 +54,8 @@ class Home extends Component{
         else{
             return(
                 <Row>
-                    <h1>{this.props.username}</h1>
+                    
+                    
                     {this.state.auctions.map((auction)=>{
                         return(
                             <Col md={4} 
@@ -119,6 +121,7 @@ class Home extends Component{
         return(
             <>
             <Container>
+         
                 <Row style={{padding:'20px'}}>
                     <Col md={6}>
                     <h1

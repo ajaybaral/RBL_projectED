@@ -14,7 +14,8 @@ class MakeBid extends Component{
             product:{},
             amount:0,
             starttime:0,
-            endtime:0
+            endtime:0,
+            address:"0x645"
         };
     }
     componentDidMount()
@@ -103,7 +104,7 @@ class MakeBid extends Component{
                             style={{width:'90%', backgroundColor:'#FFA0A0', fontWeight:'bolder', border:'none', color:'#21325E' }}
                             onClick = { () => {
                               
-                                var s={news:this.state.amount,id:this.state.product._id};
+                                var s={news:this.state.amount,id:this.state.product._id,address:this.state.address};
                                 if(this.state.amount<this.state.product.price)
                                 alert("less")
                                 else
