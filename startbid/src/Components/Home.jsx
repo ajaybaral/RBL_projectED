@@ -40,52 +40,6 @@ class Home extends Component{
         })
     }
 
-    render(){
-        
-        return(
-            <>
-            <Container>
-                <Row style={{padding:'20px'}}>
-                    <Col md={6}>
-                    <h1
-                    style={{ fontWeight:'bolder'}}
-                > Start Bid  </h1>
-                    </Col>
-                    <Col md={6} style={{textAlign:'right'}}>
-                        <Button onClick={
-                            () => {
-                                const Web3 = require('web3');
-                                // web3 lib instance
-                                if(typeof window.web3 !== 'undefined'){
-                                    const web3 = new Web3(window.ethereum);
-                                    // get all accounts
-                                    // const accounts = await web3.eth.getAccounts();
-                                    console.log(web3);
-                                }
-                                else{
-                                    alert('No web3? You should consider trying MetaMask!');
-                                }
-                            }
-                        }>Connect Wallet</Button>
-                        <Dropdown style={{margin:'10px'}}>
-                        <Dropdown.Toggle id="auction-filter"
-                            style={{paddingLeft:'20px', paddingRight:'20px', backgroundColor:'#21325E'}}
-                        >
-                            {this.state.auctionFilterActive}
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu>
-                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'All'})}}>All</Dropdown.Item>
-                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'Live'})}}>Live</Dropdown.Item>
-                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'Upcoming'})}}>Upcoming</Dropdown.Item>
-                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'Ended'})}}>Ended</Dropdown.Item>
-                        </Dropdown.Menu>
-                        </Dropdown>
-                    </Col>
-                </Row>
-
-                <h4 style={{marginLeft:'20px'}}>{this.state.auctionFilterActive} Auctions</h4> 
-                
     addproducts()
     {
         if(this.state.b==0)
@@ -170,6 +124,21 @@ class Home extends Component{
                 > Start Bid  </h1>
                     </Col>
                     <Col md={6} style={{textAlign:'right'}}>
+                        <Button onClick={
+                            () => {
+                                const Web3 = require('web3');
+                                // web3 lib instance
+                                if(typeof window.web3 !== 'undefined'){
+                                    const web3 = new Web3(window.ethereum);
+                                    // get all accounts
+                                    // const accounts = await web3.eth.getAccounts();
+                                    console.log(web3);
+                                }
+                                else{
+                                    alert('No web3? You should consider trying MetaMask!');
+                                }
+                            }
+                        }>Connect Wallet</Button>
                         <Dropdown style={{margin:'10px'}}>
                         <Dropdown.Toggle id="auction-filter"
                             style={{paddingLeft:'20px', paddingRight:'20px', backgroundColor:'#21325E'}}
