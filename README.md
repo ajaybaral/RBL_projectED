@@ -44,4 +44,25 @@ Contract Address: 0xE6CcAFB99015d50D631B2f310B50471EB411f8Da
 View our contract interactions at https://ropsten.etherscan.io/address/0xe6ccafb99015d50d631b2f310b50471eb411f8da
 
 ## Platform Screenshots
+### Authentication / Login Page
+![login](https://github.com/bharathbabu68/Red-Ross/blob/main/screenshots/1.png)
+
+### Connecting wallet to website
+![connecting_wallet](https://github.com/bharathbabu68/Red-Ross/blob/main/screenshots/2.png)
+
+### Main auctions page (Real time auctions)
+![main_page](https://github.com/bharathbabu68/Red-Ross/blob/main/screenshots/3.png)
+![main_page_2](https://github.com/bharathbabu68/Red-Ross/blob/main/screenshots/4.png)
+
+### List new auction
+![list_auc](https://github.com/bharathbabu68/Red-Ross/blob/main/screenshots/5.png)
+
+### Auction Item Page
+![item](https://github.com/bharathbabu68/Red-Ross/blob/main/screenshots/6.png)
+
+### Blockchain Bid History
+![history](https://github.com/bharathbabu68/Red-Ross/blob/main/screenshots/7.png)
+
+### Our smart contract interactions
+![smart_c](https://github.com/bharathbabu68/Red-Ross/blob/main/screenshots/8.png)
 
