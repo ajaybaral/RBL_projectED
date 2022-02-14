@@ -200,7 +200,9 @@ class Home extends Component{
                                                 
                                             </Col>
                                             <Col md={6}>
-                                                <Button variant='light' style={{width:'80%'}}> View History </Button>
+                                                <Button onClick = { () => {
+                                                        window.location.replace(`explore/${auction._id}`);
+                                                    }} variant='light' style={{width:'80%'}}> View History </Button>
                                             </Col>
                                         </Row>
                                         

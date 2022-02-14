@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { auctions } from "../Resources/auctions";
-import { Row, Col, Image, Button, Container, Breadcrumb, BreadcrumbItem, Modal,Jumbotron} from 'react-bootstrap';
+import { Row, Col, Image, Button, Container, Breadcrumb, BreadcrumbItem, Modal,Jumbotron,Table} from 'react-bootstrap';
 import {FaEthereum} from 'react-icons/fa';
 import {abi} from "../Resources/abi";
 import io from 'socket.io-client'
@@ -24,11 +24,15 @@ class MakeBid extends Component{
             setshow:false,
             a:0,
             contractval:'',
+            tablearr:[],
+            tabletoggle:0
         };
         this.rendercomponent=this.rendercomponent.bind(this);
+        this.rendertable=this.rendertable.bind(this);
+        this.renderrow=this.renderrow.bind(this);
     }
 
-    componentDidMount()
+   async componentDidMount()
     {
         var web3;
         const Web3 = require('web3');
@@ -91,6 +95,9 @@ class MakeBid extends Component{
                     this.setState({latency:latencyval});
             }
          });
+
+       
+        
     }
 
     getalltransactionsblockchain(uid){
@@ -139,7 +146,11 @@ class MakeBid extends Component{
             console.error(err);
         }
         });
+        
     }
+
+   
+
     rendercomponent()
     {
         if(this.state.a==0)
@@ -153,6 +164,7 @@ class MakeBid extends Component{
                 // console.log(this.state.product.ending_date);
                 return(
                     <>
+
                     <Modal show={this.state.auction_bid_modal}>
                         <Modal.Header >
                         <Modal.Title>Invalid Bid</Modal.Title>
@@ -235,7 +247,7 @@ class MakeBid extends Component{
                                     </input> 
                                 </Col>
                             
-                                <Col md={7}>
+                                <Col md={5}>
                                     <Button  className="btn-lg"
                                         style={{width:'90%', backgroundColor:'#FFA0A0', fontWeight:'bolder', border:'none', color:'#21325E' }}
                                         onClick = { () => {
@@ -260,32 +272,50 @@ class MakeBid extends Component{
                                         }}
                                     > Make a Bid </Button>
                                 </Col>
+                                
+                                <Col md={4}>
+                                <Button className= "authenticate-btn-active" 
+                        style={{height:'3rem'}} size='lg' onClick={async ()=> {
+                            this.setState({tabletoggle:1});
+                        var auc_id = this.state.product._id;
+                        var contract = this.state.contractval;
+                        await contract.methods.view_all_transactions(auc_id).call().then(async (result)=> {
+                            console.log(result.length);
+                            var arr=[];
+                            for(var i=result.length-1;i>=0;i--)
+                            {
+                                arr.push(result[i]);
+                            }
+                            arr.sort((a,b)=>{
+                                if(parseInt(a.timestamp)<parseInt(b.timestamp))
+                                return 1;
+                                if(parseInt(a.timestamp)>parseInt(b.timestamp))
+                                return -1;
+                                return 0;
+                            })
+                            
+                           
+                            var p=[1,2,3];
+                            await this.setState({tablearr:arr});
+                            console.log(this.state.tablearr);
+                         
+                        
+                        });
+                        }}>Get history</Button>
+                                </Col>
                             </Row>
                             
                             <p>Measured latency: {this.state.latency} ms</p>
                             </Col>
                         </Row>
                         <Row>
-                            <Col md={3}>
-                        <h1>History</h1>
-                        </Col>
+                            
                         <Col md={9}>
-                        <Button onClick={ ()=> {
-                        var auc_id = this.state.product._id;
-                        var contract = this.state.contractval;
-                        contract.methods.view_all_transactions(auc_id).call().then(function(result) {
-                            console.log(result.length);
-                            for(var i=result.length-1;i>=0;i--){
-                                var res = result[i];
-                                console.log(res);
-                                var temp = res.bid_placer + " placed a bid for " + res.bidded_value;
-                                console.log(temp);
-                            }
-                        
-                        });
-                        }}>Get history</Button>
+                       
+                         <h1 className="mt-5">History</h1>
                         </Col>
                         </Row>
+                        {this.rendertable()}
                     </Container>
                     </>
                 );
@@ -302,12 +332,46 @@ class MakeBid extends Component{
               
     }
 
-
+    renderrow(arr)
+    {
+        return(
+            <tr>
+                <td>{arr.order}</td>
+                <td>{arr.bid_placer}</td>
+                <td>{arr.bidded_value}</td>
+            </tr>
+        );
+    }
+    rendertable()
+    {
+        if(this.state.tabletoggle===1)
+        {
+            return(
+                <Table striped bordered hover >
+                <thead>
+                   
+                    <th>Timestamp</th>
+                    <th>Bidder's Address</th>
+                    <th>Amount</th>
+                </thead>
+                <tbody>
+                   {this.state.tablearr.map((arr)=>{
+                       return this.renderrow(arr);
+                   })}
+                </tbody>
+                </Table>
+                );
+        }
+        else
+        return <div></div>
+       
+    }
 
     render(){
         return(
             <>
            {this.rendercomponent()}
+           
             </>
         )
     };
