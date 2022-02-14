@@ -124,6 +124,7 @@ app.post("/addauction",async (req,res)=>{
        obj["ending_date"]=parseInt(obj["ending_date"]);
        obj["_id"]=arr.length;
        obj["winner_address"]="";
+       obj["bid_count"]=0;
        console.log(obj);
 
 
