@@ -9,7 +9,6 @@ contract Auction{
 
     struct auction{
         string prod_title;
-        string owner_name;
         bool is_active;
         bool amount_status;
         uint unique_id;
@@ -24,6 +23,7 @@ contract Auction{
         address bid_placer;
         uint bidded_value;
         uint order;
+        uint timestamp;
         bool winner;
     }
 
@@ -31,10 +31,10 @@ contract Auction{
 
     auction[] public auctions;
 
-     function list_new_auction(string memory title, string memory name, uint days_to_deadline, uint starting_bid) public returns(uint256){
+     function list_new_auction(string memory title, uint days_to_deadline, uint starting_bid) public returns(uint256){
         require(days_to_deadline > 0);
         require(starting_bid > 0);
-        auctions.push(auction(title, name, true, false, id_counter, block.timestamp, uint256(block.timestamp + days_to_deadline *1 days), starting_bid, 0, msg.sender));
+        auctions.push(auction(title, true, false, id_counter, block.timestamp, uint256(block.timestamp + days_to_deadline *1 days), starting_bid, 0, msg.sender));
         id_counter++;
         emit listed_auction(id_counter-1);
         return id_counter-1;
@@ -48,7 +48,7 @@ contract Auction{
         require(block.timestamp < auctions[auction_id].time_of_deadline);
         require(auctions[auction_id].is_active==true);
         bidder[] storage all_bidders = bidders[auction_id];
-        all_bidders.push(bidder(msg.sender, bidded_value, orderval,false));
+        all_bidders.push(bidder(msg.sender, bidded_value, block.timestamp,orderval,false));
         return bidders[auction_id];
     }
 
@@ -77,11 +77,15 @@ contract Auction{
 
     function withdraw_from_auction(uint auction_id) public {
         require(auctions[auction_id].is_active==true);
-        require(auctions[auction_id].owner_name == msg.sender);
+        require(auctions[auction_id].auction_owner == msg.sender);
         require(block.timestamp > auctions[auction_id].time_of_deadline);
         require(auctions[auction_id].amount_status==true);
         uint amt = auctions[auction_id].winning_bid_amt;
         payable(msg.sender).transfer(amt);
         auctions[auction_id].is_active=false;
+    }
+
+    function view_all_transactions(uint auction_id) public view returns(bidder[] memory){
+        return bidders[auction_id];
     }
 }

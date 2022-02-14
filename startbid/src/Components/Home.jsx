@@ -61,7 +61,7 @@ class Home extends Component{
             });
         }
 
-        var address = "0x6d7D3d587e2640285B9b3c3E9fd27b12e409934D";
+        var address = "0xE6CcAFB99015d50D631B2f310B50471EB411f8Da";
 
         var contract = new web3.eth.Contract(abi, address);
 

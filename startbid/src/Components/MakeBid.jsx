@@ -53,7 +53,7 @@ class MakeBid extends Component{
         }
 
         
-        var address = "0x6d7D3d587e2640285B9b3c3E9fd27b12e409934D";
+        var address = "0xE6CcAFB99015d50D631B2f310B50471EB411f8Da";
         var contract = new web3.eth.Contract(abi, address);
 
         this.setState({contractval: contract});
@@ -77,18 +77,19 @@ class MakeBid extends Component{
         
         socket.on('message', data => {
             console.log("recieved");
-            var prod2=this.state.product;
-        
-                prod2["price"]=data['news'];
-                prod2["bid_count"]=data['bidcount'];
-                console.log(prod2)
+            var prod_id = this.state.product._id;
+            if(data["id"]==prod_id){
+                var prod2=this.state.product;
+            
+                    prod2["price"]=data['news'];
+                    prod2["bid_count"]=data['bidcount'];
+                    console.log(prod2)
 
-                this.setState({product:prod2});
-                this.setState({endtime:Date.now()})
-                var latencyval = this.state.endtime - this.state.starttime;
-                this.setState({latency:latencyval});
-                var prod_id = this.state.product._id;
-                var contract = this.state.contractval;
+                    this.setState({product:prod2});
+                    this.setState({endtime:Date.now()})
+                    var latencyval = this.state.endtime - this.state.starttime;
+                    this.setState({latency:latencyval});
+            }
          });
     }
 
@@ -276,6 +277,7 @@ class MakeBid extends Component{
                             console.log(result.length);
                             for(var i=result.length-1;i>=0;i--){
                                 var res = result[i];
+                                console.log(res);
                                 var temp = res.bid_placer + " placed a bid for " + res.bidded_value;
                                 console.log(temp);
                             }
