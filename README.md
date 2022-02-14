@@ -26,14 +26,15 @@ Our platform uses a MongoDB cloud Atlas Database in order to keep track of the c
 
 ### Tech Stack
 #### Frontend
+- ReactJS
 - HTML
 - CSS
 - Javascript 
-- ReactJS
 #### Backend
 - Node JS
 - Express
 - MongoDB
+- Socket.io
 #### Blockchain
 - Web3js
 - Solidity
