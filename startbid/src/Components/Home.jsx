@@ -9,6 +9,7 @@ import {TiPlus} from 'react-icons/ti';
 import {Link} from 'react-router-dom';
 import io from 'socket.io-client'
 var endpoint="http://localhost:4000";
+const Web3 = require('web3');
 
 const socket = io.connect(endpoint); //new change
 
@@ -27,7 +28,7 @@ class Home extends Component{
             web3: null,
             setshow:false,
             contractval:'',
-
+            connect_web3_modal:true,
         };
         this.addproducts=this.addproducts.bind(this);
         this.connect=this.connect.bind(this);
@@ -38,34 +39,7 @@ class Home extends Component{
  
     componentDidMount = () => {
 
-        var web3;
-        const Web3 = require('web3');
-        // web3 lib instance
-        if(typeof window.web3 !== 'undefined'){
-            web3 = new Web3(window.ethereum);
-            console.log(web3);
-            // get all accounts
-            // const accounts = await web3.eth.getAccounts();
-            this.setState({web3: web3});
-            this.connect(web3);
-            this.initialiseAddress(web3);
-        }
-        else{
-            alert('No web3? You should consider trying MetaMask!');
-        }
-
-        if(window.ethereum) {
-            window.ethereum.on('accountsChanged', () => {
-                this.initialiseAddress(web3);
-                console.log("Account changed");
-            });
-        }
-
-        var address = "0xE6CcAFB99015d50D631B2f310B50471EB411f8Da";
-
-        var contract = new web3.eth.Contract(abi, address);
-
-        this.setState({contractval: contract});
+        
      
         setInterval(async() => {
             await this.setState({bulbColorIndex: (this.state.bulbColorIndex+1)%2});
@@ -93,47 +67,100 @@ class Home extends Component{
             allprods[currprodid].bid_count=data['bidcount'];
             this.setState({auctions:allprods});
          });
+
+         var web3;
+         const Web3 = require('web3');
+         // web3 lib instance
+         if(typeof window.web3 !== 'undefined'){
+             web3 = new Web3(window.ethereum);
+             console.log(web3);
+             // get all accounts
+             // const accounts = await web3.eth.getAccounts();
+             this.setState({web3: web3});
+             this.connect(web3);
+             this.initialiseAddress(web3);
+         }
+         else{
+             alert('No web3? Please install the metamask extension and refresh the page');
+             return;
+         }
+ 
+         if(window.ethereum) {
+             window.ethereum.on('accountsChanged', () => {
+                 this.initialiseAddress(web3);
+                 console.log("Account changed");
+             });
+         }
+ 
+         var address = "0xE6CcAFB99015d50D631B2f310B50471EB411f8Da";
+ 
+         var contract = new web3.eth.Contract(abi, address);
+ 
+         this.setState({contractval: contract});
+         
     }
 
-    initialiseAddress(web3) {
+    // initialiseAddress(web3) {
 
-        web3.eth.getAccounts().then((accounts) => {
+    //     web3.eth.getAccounts().then((accounts) => {
 
-            var account_addr = accounts[0];
+    //         var account_addr = accounts[0];
     
-            this.setState({account_addr: accounts[0]});
+    //         this.setState({account_addr: accounts[0]});
     
-            if(!account_addr) {
+    //         if(!account_addr) {
                 
-                this.setState({connectwalletstatus: 'Connect Wallet'});
-                return;
-            }
+    //             this.setState({connectwalletstatus: 'Connect Wallet'});
+    //             return;
+    //         }
     
-            const len = account_addr.length;
-            const croppedAddress = account_addr.substring(0,6) + "..." + account_addr.substring(len-4, len);
+    //         const len = account_addr.length;
+    //         const croppedAddress = account_addr.substring(0,6) + "..." + account_addr.substring(len-4, len);
     
-            web3.eth.getBalance(account_addr).then((balance) => {
+    //         web3.eth.getBalance(account_addr).then((balance) => {
     
-                var account_bal = (Math.round(web3.utils.fromWei(balance) * 100) / 100);
-                var temp = croppedAddress + " (" + account_bal + " ETH)";
-                this.setState({connectwalletstatus: temp});
-            });
-        });
-    }
+    //             var account_bal = (Math.round(web3.utils.fromWei(balance) * 100) / 100);
+    //             var temp = croppedAddress + " (" + account_bal + " ETH)";
+    //             this.setState({connectwalletstatus: temp});
+    //         });
+    //     });
+    // }
 
-    connect(web3) {
+    // connect(web3) {
 
-        window.ethereum
-        .request({ method: 'eth_requestAccounts' })
-        .then(this.initialiseAddress(web3))
-        .catch((err) => {
-        if (err.code === 4001) {
-            alert('Please connect to MetaMask.');
-        } else {
-            console.error(err);
-        }
-        });
-    }
+    //     window.ethereum
+    //     .request({ method: 'eth_requestAccounts' })
+    //     .then(web3.eth.getAccounts().then((accounts) => {
+
+    //         var account_addr = accounts[0];
+    
+    //         this.setState({account_addr: accounts[0]});
+    
+    //         if(!account_addr) {
+                
+    //             this.setState({connectwalletstatus: 'Connect Wallet'});
+    //             return;
+    //         }
+    
+    //         const len = account_addr.length;
+    //         const croppedAddress = account_addr.substring(0,6) + "..." + account_addr.substring(len-4, len);
+    
+    //         web3.eth.getBalance(account_addr).then((balance) => {
+    
+    //             var account_bal = (Math.round(web3.utils.fromWei(balance) * 100) / 100);
+    //             var temp = croppedAddress + " (" + account_bal + " ETH)";
+    //             this.setState({connectwalletstatus: temp});
+    //         });
+    //     }))
+    //     .catch((err) => {
+    //     if (err.code === 4001) {
+    //         alert('Please connect to MetaMask.');
+    //     } else {
+    //         console.error(err);
+    //     }
+    //     });
+    // }
+
     unixToDate(unix_timestamp) {
         unix_timestamp = parseInt(unix_timestamp);
         const timeStamp = unix_timestamp;
@@ -221,6 +248,7 @@ class Home extends Component{
         web3.eth.getAccounts().then((accounts) => {
 
             var account_addr = accounts[0];
+            console.log(account_addr);
     
             this.setState({account_addr: accounts[0]});
     
@@ -238,6 +266,7 @@ class Home extends Component{
                 var account_bal = (Math.round(web3.utils.fromWei(balance) * 100) / 100);
                 var temp = croppedAddress + " (" + account_bal + " ETH)";
                 this.setState({connectwalletstatus: temp});
+                this.setState({connect_web3_modal: false});
                 console.log(temp);
             });
         });
@@ -247,21 +276,53 @@ class Home extends Component{
 
         window.ethereum
         .request({ method: 'eth_requestAccounts' })
-        .then(this.initialiseAddress(web3))
         .catch((err) => {
         if (err.code === 4001) {
             alert('Please connect to MetaMask.');
         } else {
             console.error(err);
         }
-        });
+        })
     }
 
     render(){
         
         return(
             <>
+
             <Container>
+            <Modal show={this.state.connect_web3_modal}>
+                        <Modal.Header >
+                        <Modal.Title>Connect to Web3</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                        <p>Please connect your wallet to access this site. Install metamask and use it with Ropsten test network. If connecting for the first time, reload after connecting.</p>
+                        </Modal.Body>
+                        <Modal.Footer>
+                        <Button variant="secondary" onClick={async() => {
+                            var web3;
+                            if(typeof window.web3 !== 'undefined'){
+                                web3 = new Web3(window.ethereum);
+                                console.log(web3);
+                                // get all accounts
+                                // const accounts = await web3.eth.getAccounts();
+                                this.setState({web3: web3});
+                                this.connect(web3);
+                                this.initialiseAddress(web3);
+
+                                var address = "0xE6CcAFB99015d50D631B2f310B50471EB411f8Da";
+ 
+                                var contract = new web3.eth.Contract(abi, address);
+ 
+                                this.setState({contractval: contract});
+                            }
+                            else{
+                                alert('No web3? Please install the metamask extension and refresh the page');
+                                return;
+                            }
+                        }}>Connect Wallet</Button>
+                    </Modal.Footer>
+                </Modal>
          
                 <Row style={{paddingTop:'20px'}}>
                     <Col md={9}>
@@ -271,7 +332,7 @@ class Home extends Component{
                     </Col>
                     <Col md={3} style={{textAlign:'right'}}>
                     <Button className= "authenticate-btn-active" 
-                        style={{height:'3rem'}} >{this.state.connectwalletstatus}
+                        style={{height:'3rem'}} >{this.state.connectwalletstatus} 
                     </Button>
                     </Col>
                 </Row>

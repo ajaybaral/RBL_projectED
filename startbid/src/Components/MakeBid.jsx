@@ -46,7 +46,7 @@ class MakeBid extends Component{
             this.initialiseAddress(web3);
         }
         else{
-            alert('No web3? You should consider trying MetaMask!');
+            alert('No web3? Please install the metamask extension and refresh the page');
         }
 
         if(window.ethereum) {
@@ -312,7 +312,7 @@ class MakeBid extends Component{
                             
                         <Col md={9}>
                        
-                         <h1 className="mt-5">History</h1>
+                         <h1 className="mt-5">Bid History in Blockchain</h1>
                         </Col>
                         </Row>
                         {this.rendertable()}
