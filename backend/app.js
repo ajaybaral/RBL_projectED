@@ -195,7 +195,7 @@ app.listen(8000,()=>{
 })
 async function findall(client)
 {
-    const cursor = await client.db("Auction_Platform").collection("auctions").find();
+    const cursor = await client.db("Auction_Platform").collection("auctions").find().sort({_id:1});
     const arr= await cursor.toArray();
     const j=JSON.stringify(arr);
    return j;
