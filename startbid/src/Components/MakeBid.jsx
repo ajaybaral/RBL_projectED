@@ -253,7 +253,6 @@ class MakeBid extends Component{
                                                 var contract = this.state.contractval;
                                                 contract.methods.make_bid(auc_id, ordervals, biddedvals).send({from:account_addr}).then(function(result) {
                                                     alert("Transaction Successful");
-                                                    this.initialiseAddress();
                                                 });
                                             }
             
