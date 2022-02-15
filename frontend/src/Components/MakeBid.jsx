@@ -83,7 +83,27 @@ class MakeBid extends Component{
             }).then((res)=>{
                 this.setState({product:res});
                 this.setState({a:1});
-                this.getalltransactionsblockchain(key);
+                this.setState({tabletoggle:1});
+                    var auc_id = this.state.product._id;
+                    var contract = this.state.contractval;
+                    contract.methods.view_all_transactions(auc_id).call().then(async (result)=> {
+                        console.log(result.length);
+                        var arr=[];
+                        for(var i=result.length-1;i>=0;i--)
+                        {
+                            arr.push(result[i]);
+                        }
+                        arr.sort((a,b)=>{
+                            if(parseInt(a.timestamp)<parseInt(b.timestamp))
+                            return 1;
+                            else
+                            return -1;
+                        })
+                        this.setState({tablearr:arr});
+                        console.log(this.state.tablearr);
+                    
+                    
+                    });
             })
         
         socket.on('message', data => {
@@ -102,6 +122,8 @@ class MakeBid extends Component{
                     this.setState({latency:latencyval});
             }
          });
+
+        
 
        
         
@@ -352,7 +374,28 @@ class MakeBid extends Component{
                                                 var account_addr = this.state.account_addr;
                                                 var contract = this.state.contractval;
                                                 contract.methods.make_bid(auc_id, ordervals, biddedvals).send({from:account_addr}).then(async(result)=> {
-                                                    this.setState({transaction_sucess_modal:true})
+                                                    this.setState({transaction_sucess_modal:true});
+                                                    this.setState({tabletoggle:1});
+                                                var auc_id = this.state.product._id;
+                                                var contract = this.state.contractval;
+                                                contract.methods.view_all_transactions(auc_id).call().then(async (result)=> {
+                                                    console.log(result.length);
+                                                    var arr=[];
+                                                    for(var i=result.length-1;i>=0;i--)
+                                                    {
+                                                        arr.push(result[i]);
+                                                    }
+                                                    arr.sort((a,b)=>{
+                                                        if(parseInt(a.timestamp)<parseInt(b.timestamp))
+                                                        return 1;
+                                                        else
+                                                        return -1;
+                                                    })
+                                                    this.setState({tablearr:arr});
+                                                    console.log(this.state.tablearr);
+                                                
+                                                
+                                                });
                                                 });
                                             }
             
@@ -361,34 +404,6 @@ class MakeBid extends Component{
                                 </Col>
                                 
                                 <Col md={4}>
-                                <Button className= "authenticate-btn-active" 
-                        style={{height:'3rem'}} size='lg' onClick={async ()=> {
-                            this.setState({tabletoggle:1});
-                        var auc_id = this.state.product._id;
-                        var contract = this.state.contractval;
-                        await contract.methods.view_all_transactions(auc_id).call().then(async (result)=> {
-                            console.log(result.length);
-                            var arr=[];
-                            for(var i=result.length-1;i>=0;i--)
-                            {
-                                arr.push(result[i]);
-                            }
-                            arr.sort((a,b)=>{
-                                if(parseInt(a.timestamp)<parseInt(b.timestamp))
-                                return 1;
-                                if(parseInt(a.timestamp)>parseInt(b.timestamp))
-                                return -1;
-                                return 0;
-                            })
-                            
-                           
-                            var p=[1,2,3];
-                            await this.setState({tablearr:arr});
-                            console.log(this.state.tablearr);
-                         
-                        
-                        });
-                        }}>Get history</Button>
                                 </Col>
                             </Row>
                             
@@ -486,30 +501,6 @@ class MakeBid extends Component{
                                 
                             
                                 <Col md={8}>
-                                <Button className= "authenticate-btn-active" 
-                        style={{height:'3rem', marginLeft:'30px'}} size='lg' onClick={async ()=> {
-                            this.setState({tabletoggle:1});
-                        var auc_id = this.state.product._id;
-                        var contract = this.state.contractval;
-                        await contract.methods.view_all_transactions(auc_id).call().then(async (result)=> {
-                            console.log(result.length);
-                            var arr=[];
-                            for(var i=result.length-1;i>=0;i--)
-                            {
-                                arr.push(result[i]);
-                            }
-                            arr.sort((a,b)=>{
-                                if(parseInt(a.timestamp)<parseInt(b.timestamp))
-                                return 1;
-                                else
-                                return -1;
-                            })
-                            await this.setState({tablearr:arr});
-                            console.log(this.state.tablearr);
-                         
-                        
-                        });
-                        }}>Get history</Button>
                                 </Col>
                             </Row>
                             </Col>

@@ -271,21 +271,16 @@ class Home extends Component{
                                                     <h5 style={{fontWeight:'bolder'}}>{this.unixToDate(auction.ending_date)}</h5>
                                                 </Col>
                                             </Row>
-                                            <Row style={{textAlign:'center', paddingBottom:'20px'}}>
-                                                <Col md={6} style={{}}>
+                                            <Row style={{textAlign:'center', padding:'20px'}}>
+                                                <Col md={12} style={{}}>
                                                     
                                                     <Button  
-                                                        style={{width:'80%', backgroundColor:'#FFA0A0', border:'none', color:'#21325E' }}
+                                                        style={{width:'100%', backgroundColor:'#FFA0A0', border:'none', color:'#21325E' }}
                                                         onClick = { () => {
                                                             window.location.replace(`explore/${auction._id}`);
                                                         }}
-                                                    > Place bid </Button>
+                                                    > View status </Button>
                                                     
-                                                </Col>
-                                                <Col md={6}>
-                                                    <Button onClick = { () => {
-                                                            window.location.replace(`explore/${auction._id}`);
-                                                        }} variant='light' style={{width:'80%'}}> View History </Button>
                                                 </Col>
                                             </Row>
                                             
