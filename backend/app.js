@@ -7,6 +7,7 @@ app.use(cors());
 app.use(bodyparser.json());
 const http = require("http");
 const server = http.createServer(app);
+const sha256=require("sha256");
 
 const uri = "mongodb+srv://Suriyaa:mthaniga@cluster0.rsh4e.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 
@@ -65,8 +66,13 @@ app.post("/login",async (req,res)=>{
        obj=req.body;
         const result=await finduser(client,obj.name);
         var finalans={};
+
+        if(result===0){
+            finalans["success"]=-1;
+            res.send(JSON.stringify(finalans));
+        }
         
-        if(result.password===req.body.password)
+        if(result.password===sha256(req.body.password))
         {
             finalans["success"]=1;
         }
@@ -84,29 +90,34 @@ app.post("/login",async (req,res)=>{
     }
    
 })
+
 app.post("/signup",async (req,res)=>{
     try {
         console.log("hi")
         // Connect to the MongoDB cluster
        obj=req.body;
-       var userdata={username:obj.username,password:obj.password};
-
-       const result = await client.db("Auction_Platform").collection("Users").insertOne(userdata);
-        console.log(result);
-        var finalans={
-            'success': 1
-        };
-
+       var userdata={username:obj.username,password:sha256(obj.password)};
+        const tempresult = await finduser(client,obj.username);
+        if(tempresult===0){
+            const result = await client.db("Auction_Platform").collection("Users").insertOne(userdata);
+            console.log(result);
+            var finalans={
+                'success': 1
+            };
+        }
+        else{
+            var finalans={
+                'success': -1
+            };
+        }
         res.send(JSON.stringify(finalans));
-       
-         
-    } catch (e) {
-        console.error(e);
-    } finally {
-        // Close the connection to the MongoDB cluster
-       //  await client.close();
-    
-    }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            // Close the connection to the MongoDB cluster
+        //  await client.close();
+        
+        }
    
 })
 
@@ -212,7 +223,9 @@ async function find(client,id)
 async function finduser(client,username)
 {
     const cursor = await client.db("Auction_Platform").collection("Users").findOne({"username":username});
-    console.log(cursor);
+    console.log("Printing cursor")
+    if(!cursor)
+        return 0;
     return cursor;
 }
 

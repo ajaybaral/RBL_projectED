@@ -1,8 +1,9 @@
 import {Component} from 'react';
-import { Button, Image, Row, Col, Container, Form} from 'react-bootstrap';
+import { Button, Image, Row, Col, Container, Form, Modal} from 'react-bootstrap';
 import globe from '../Resources/globe.png';
 import key from '../Resources/key.png';
 import clock from '../Resources/clock.png';
+import NavBar from './NavBar_Auth';
 class Authentication extends Component{
     constructor(props){
         super(props);
@@ -13,6 +14,10 @@ class Authentication extends Component{
             susermail: '',
             spassword: '',
             sconfirmpassword: '',
+            failed_login: false,
+            signup_success: false,
+            no_user_exists: false,
+            password_mismatch: false,
         }
         this.chooseLogin = this.chooseLogin.bind(this);
         this.handleLogin=this.handleLogin.bind(this);
@@ -30,7 +35,7 @@ class Authentication extends Component{
     }
     handleSignup(){
         if(this.state.lpassword !== this.state.sconfirmpassword){
-            alert('Password Mismatch');
+            this.setState({password_mismatch:true});
             return;
         }
         var newUser = {
@@ -49,13 +54,18 @@ class Authentication extends Component{
             if(response.ok) return response.json();
         }).then(async(res) => {
             if(res.success == 1){
-                alert('Account Created Successfully \n Please Login to Continue');
+                this.setState({signup_success:true});
+                window.location.href = 'http://localhost:3000/explore';
+            }
+            else{
+                this.setState({user_already_exists:true});
             }
         })
     }
     handleLogin()
     {
         console.log(this.state.lusermail);
+        console.log(this.state.lpassword);
         var key={name:this.state.lusermail.split("@")[0],password:this.state.lpassword};
      
         fetch('http://localhost:8000/login',{
@@ -67,14 +77,19 @@ class Authentication extends Component{
         }).then((res)=>{
             return res.json();
         }).then(async(res)=>{
+            console.log("Login status")
+            console.log(res.success)
             if(res.success==1)
             {
-                document.querySelector("#name").innerHTML=this.state.lusermail.split("@")[0]
                 await this.props.func(this.state.lusermail.split("@")[0]);
+                localStorage.setItem('user',JSON.stringify({token: "logged_in", status: 1}));
                 window.location.href = 'http://localhost:3000/explore';
             }
+            else if(res.success==-1){
+                this.setState({no_user_exists:true});
+            }
             else{
-                alert('Incorrect Username/Password');
+                this.setState({failed_login:true})
             }
 
         })
@@ -169,9 +184,9 @@ class Authentication extends Component{
     }
 
     render(){
-
         return(
         <>
+            <NavBar/>
             <Image src={globe} className="image" width='100%' height='auto' 
                 style={{objectFit:'cover', position:'absolute', zIndex:'-1'}}
             />
@@ -186,11 +201,11 @@ class Authentication extends Component{
                     <h1 
                     style={{fontSize:'500%', fontWeight:'bolder'}}>Value For Your Valuables.</h1> 
                     
-                    <h5 style={{marginTop:'30px'}}> <span style={{fontSize:'40px'}}> 502416 </span>Happy Customers </h5>
-                    <h5> <span style={{fontSize:'40px'}}> 20942548 </span> Antiques Sold </h5>
+                    <h3 style={{marginTop:'30px'}}> Your one-stop decentralized auctioning platform </h3>
+                    {/* <h5> <span style={{fontSize:'40px'}}> 20942548 </span> Antiques Sold </h5> */}
 
-                    <h5 style={{marginTop:'100px'}} > Leading Platform to sell your Antiques </h5>
-                    <h6> © Copyright Reserved by StartBid 2022 </h6>
+                    <h5 style={{marginTop:'100px', fontWeight:'light'}} > Leading Platform to sell your Antiques </h5>
+                    <h6 style={{fontWeight:'lighter'}}> © Copyright Reserved by StartBid 2022 </h6>
                 </Col>
                 <Col md={5} style={{}}>
                     <Container fluid 
@@ -212,7 +227,81 @@ class Authentication extends Component{
                    
                 </Col>
             </Row>
+
+            <Modal show={this.state.failed_login}>
+                        <Modal.Header >
+                        <Modal.Title>Incorrect Password</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                        <p>Please ensure you type in your correct credentials</p>
+                        </Modal.Body>
+                        <Modal.Footer>
+                        <Button variant="secondary" onClick={()=>{this.setState({failed_login:false})
+                    }}>
+                        Close
+                    </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show={this.state.user_already_exists}>
+                        <Modal.Header >
+                        <Modal.Title>Account exists</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                        <p>This email has already been used for creating an account. Please enter a different email. </p>
+                        </Modal.Body>
+                        <Modal.Footer>
+                        <Button variant="secondary" onClick={()=>{this.setState({user_already_exists:false})
+                    }}>
+                        Close
+                    </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show={this.state.password_mismatch}>
+                        <Modal.Header >
+                        <Modal.Title>Password Mismatch</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                        <p>Please ensure password and confirm password are same.</p>
+                        </Modal.Body>
+                        <Modal.Footer>
+                        <Button variant="secondary" onClick={()=>{this.setState({password_mismatch:false})
+                    }}>
+                        Close
+                    </Button>
+                    </Modal.Footer>
+                </Modal>
            
+                <Modal show={this.state.signup_success}>
+                        <Modal.Header >
+                        <Modal.Title>Success</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                        <p>Your account has been successfully created</p>
+                        </Modal.Body>
+                        <Modal.Footer>
+                        <Button variant="secondary" onClick={()=>{this.setState({signup_success:false})
+                    }}>
+                        Close
+                    </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show={this.state.no_user_exists}>
+                        <Modal.Header >
+                        <Modal.Title>Invalid Login</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                        <p>You dont have an account yet, please create one and try again!</p>
+                        </Modal.Body>
+                        <Modal.Footer>
+                        <Button variant="secondary" onClick={()=>{this.setState({no_user_exists:false})
+                    }}>
+                        Close
+                    </Button>
+                    </Modal.Footer>
+                </Modal>
             
         </>        
         );

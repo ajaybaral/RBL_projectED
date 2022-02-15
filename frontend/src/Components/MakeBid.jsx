@@ -1,9 +1,10 @@
 import { Component } from "react";
 import { auctions } from "../Resources/auctions";
-import { Row, Col, Image, Button, Container, Breadcrumb, BreadcrumbItem, Modal,Jumbotron,Table} from 'react-bootstrap';
+import { Row, Col, Image, Button, Container, Breadcrumb, BreadcrumbItem, Modal,Jumbotron,Table, Navbar} from 'react-bootstrap';
 import {FaEthereum} from 'react-icons/fa';
 import {abi} from "../Resources/abi";
 import io from 'socket.io-client'
+import NavBar from './NavBar';
 const Web3 = require('web3');
 var endpoint="http://localhost:4000";
 
@@ -40,6 +41,10 @@ class MakeBid extends Component{
 
    async componentDidMount()
     {
+        var tempvalas = (JSON.parse(localStorage.getItem('user')))
+        if(tempvalas==null){
+            window.location.href="http://localhost:3000/authenticate";
+        }
         var web3;
          const Web3 = require('web3');
          if(typeof window.web3 !== 'undefined'){
@@ -559,6 +564,7 @@ class MakeBid extends Component{
     render(){
         return(
             <>
+            <NavBar/>
            {this.rendercomponent()}
            
             </>

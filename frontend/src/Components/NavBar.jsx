@@ -25,6 +25,10 @@ class NavBar extends Component {
               
                 /> 
               </Navbar.Brand>
+
+              <Navbar.Brand href="/" className="navbrandname">
+              <h2 style={{color:"white", fontWeight:'light'}}>StartBid</h2>
+              </Navbar.Brand>
             
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav 
@@ -46,10 +50,12 @@ class NavBar extends Component {
                   </Nav.Link>
                 </div>
                 <div className="navdiv navstyle ">
-                  <Nav.Link 
+                  <Nav.Link  
                   id="name"
                   style={{color:"white", fontWeight:"bolder", marginRight:'30px'}}
-                  href="/authenticate" className=" navlinks">
+                  href="/authenticate" className=" navlinks" onClick={()=>{
+                    localStorage.removeItem('user');
+                  }}>
                     Logout
                   </Nav.Link>
                 </div>

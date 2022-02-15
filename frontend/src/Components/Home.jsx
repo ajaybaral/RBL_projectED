@@ -8,6 +8,7 @@ import {FaEthereum} from 'react-icons/fa';
 import {TiPlus} from 'react-icons/ti';
 import {Link} from 'react-router-dom';
 import io from 'socket.io-client'
+import NavBar from './NavBar';
 var endpoint="http://localhost:4000";
 const Web3 = require('web3');
 
@@ -30,6 +31,7 @@ class Home extends Component{
             contractval:'',
             connect_web3_modal:false,
             metamask_installed:false,
+            not_logged_in:false,
         };
         this.addproducts=this.addproducts.bind(this);
         this.connect=this.connect.bind(this);
@@ -39,7 +41,10 @@ class Home extends Component{
    
  
     componentDidMount = () => {
-
+        var tempvalas = (JSON.parse(localStorage.getItem('user')))
+        if(tempvalas==null){
+            window.location.href="http://localhost:3000/authenticate";
+        }
         setInterval(async() => {
             await this.setState({bulbColorIndex: (this.state.bulbColorIndex+1)%2});
         }, 600);
@@ -398,7 +403,7 @@ class Home extends Component{
         
         return(
             <>
-
+            <NavBar/>
             <Container>
             <Modal show={this.state.connect_web3_modal}>
                         <Modal.Header >
