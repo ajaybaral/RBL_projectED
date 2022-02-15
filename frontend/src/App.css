@@ -15,6 +15,20 @@ animation-iteration-count: infinite;
   100% {fill: #fafafa;}
 }
 
+.live-icon-finished{
+    animation-name: liveAnimationFinished;
+    animation-duration: 1.5s;
+animation-iteration-count: infinite;
+}
+
+@keyframes liveAnimationFinished {
+    0%   {fill: #fafafa;}
+    25%  {fill: #ee0707;}
+    50%  {fill: #ee0707;}
+    100% {fill: #fafafa;}
+  }
+  
+
 .animate-image{
     /* transition-duration:  5s; */
 }
@@ -55,7 +69,7 @@ animation-iteration-count: infinite;
     color: #21325E;
     width: 90%;
 }
-.authenticate-btn-active{
+.authenticate-btn-active, .authenticate-btn-active:hover{
     background-color: #21325E;
     color: white;
 }

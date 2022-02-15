@@ -28,7 +28,8 @@ class Home extends Component{
             web3: null,
             setshow:false,
             contractval:'',
-            connect_web3_modal:true,
+            connect_web3_modal:false,
+            metamask_installed:false,
         };
         this.addproducts=this.addproducts.bind(this);
         this.connect=this.connect.bind(this);
@@ -39,8 +40,6 @@ class Home extends Component{
  
     componentDidMount = () => {
 
-        
-     
         setInterval(async() => {
             await this.setState({bulbColorIndex: (this.state.bulbColorIndex+1)%2});
         }, 600);
@@ -63,26 +62,36 @@ class Home extends Component{
             console.log("recieved");
             var currprodid = data["id"];
             var allprods=this.state.auctions;
-            allprods[currprodid].price=data['news'];
-            allprods[currprodid].bid_count=data['bidcount'];
-            this.setState({auctions:allprods});
+            for(var i=0;i<allprods.length;i++){
+                if(allprods[i]["_id"]==currprodid){
+                    allprods[i]["bid_count"]=data["bidcount"];
+                    allprods[i]["price"]=data["news"];
+                    this.setState({auctions:allprods});
+                    break;
+                }
+            }
          });
 
          var web3;
          const Web3 = require('web3');
-         // web3 lib instance
          if(typeof window.web3 !== 'undefined'){
              web3 = new Web3(window.ethereum);
              console.log(web3);
-             // get all accounts
-             // const accounts = await web3.eth.getAccounts();
+             var address = "0xE6CcAFB99015d50D631B2f310B50471EB411f8Da";
+             var contract = new web3.eth.Contract(abi, address);
+             this.setState({contractval: contract});
              this.setState({web3: web3});
-             this.connect(web3);
-             this.initialiseAddress(web3);
+             web3.eth.getAccounts().then((accounts) => {
+                if(accounts.length == 0){
+                    this.setState({connect_web3_modal: true});
+                }
+                else{
+                    this.initialiseAddress(web3);
+                }
+             });
          }
          else{
-             alert('No web3? Please install the metamask extension and refresh the page');
-             return;
+             this.setState({metamask_installed:true});
          }
  
          if(window.ethereum) {
@@ -92,74 +101,8 @@ class Home extends Component{
              });
          }
  
-         var address = "0xE6CcAFB99015d50D631B2f310B50471EB411f8Da";
- 
-         var contract = new web3.eth.Contract(abi, address);
- 
-         this.setState({contractval: contract});
          
     }
-
-    // initialiseAddress(web3) {
-
-    //     web3.eth.getAccounts().then((accounts) => {
-
-    //         var account_addr = accounts[0];
-    
-    //         this.setState({account_addr: accounts[0]});
-    
-    //         if(!account_addr) {
-                
-    //             this.setState({connectwalletstatus: 'Connect Wallet'});
-    //             return;
-    //         }
-    
-    //         const len = account_addr.length;
-    //         const croppedAddress = account_addr.substring(0,6) + "..." + account_addr.substring(len-4, len);
-    
-    //         web3.eth.getBalance(account_addr).then((balance) => {
-    
-    //             var account_bal = (Math.round(web3.utils.fromWei(balance) * 100) / 100);
-    //             var temp = croppedAddress + " (" + account_bal + " ETH)";
-    //             this.setState({connectwalletstatus: temp});
-    //         });
-    //     });
-    // }
-
-    // connect(web3) {
-
-    //     window.ethereum
-    //     .request({ method: 'eth_requestAccounts' })
-    //     .then(web3.eth.getAccounts().then((accounts) => {
-
-    //         var account_addr = accounts[0];
-    
-    //         this.setState({account_addr: accounts[0]});
-    
-    //         if(!account_addr) {
-                
-    //             this.setState({connectwalletstatus: 'Connect Wallet'});
-    //             return;
-    //         }
-    
-    //         const len = account_addr.length;
-    //         const croppedAddress = account_addr.substring(0,6) + "..." + account_addr.substring(len-4, len);
-    
-    //         web3.eth.getBalance(account_addr).then((balance) => {
-    
-    //             var account_bal = (Math.round(web3.utils.fromWei(balance) * 100) / 100);
-    //             var temp = croppedAddress + " (" + account_bal + " ETH)";
-    //             this.setState({connectwalletstatus: temp});
-    //         });
-    //     }))
-    //     .catch((err) => {
-    //     if (err.code === 4001) {
-    //         alert('Please connect to MetaMask.');
-    //     } else {
-    //         console.error(err);
-    //     }
-    //     });
-    // }
 
     unixToDate(unix_timestamp) {
         unix_timestamp = parseInt(unix_timestamp);
@@ -182,6 +125,7 @@ class Home extends Component{
                 <Row>
                     
                     {this.state.auctions.map((auction)=>{
+                        if((this.state.auctionFilterActive==="Live") && (parseInt(Date.now()) < auction.ending_date)){
                         return(
                             <Col md={4} 
                                 style={{padding: '30px'}}>
@@ -236,6 +180,175 @@ class Home extends Component{
                                 </Card>    
                             </Col>
                         )
+                                                }
+                    if((this.state.auctionFilterActive==="Live") && (parseInt(Date.now()) < auction.ending_date)){
+                        return(
+                            <Col md={4} 
+                                style={{padding: '30px'}}>
+                                <Card 
+                                    style={{borderTop:"1px solid black"}}>
+                                        <Card.Img 
+                                            style={{height:"270px", objectFit:'cover'}}
+                                            src={auction.link}/>
+                                        <Row style={{marginTop: '20px'}}>
+                                            <Col md={8}>
+                                                <h4
+                                                style={{paddingLeft:'20px',fontWeight:'bolder'}}
+                                            >{auction.title}</h4>
+                                            </Col>
+                                            <Col md={4} style={{fontSize:'20px'}}>
+                                                <AiFillHeart style={{color:'#FFA0A0'}}/>
+                                                <span style={{marginLeft:'10px'}}>{auction.bid_count} 
+                                                
+                                                </span>
+                                            </Col>
+                                        </Row> 
+                                        <Row style={{padding:'20px'}}>
+                                            <Col md={6} style={{}}>
+                                                <h5> Current Bid </h5>
+                                                <h5 style={{fontWeight:'bolder'}}> {auction.price} ETH 
+                                                <FaEthereum style={{color:'#21325E'}}/>
+                                                </h5>
+                                            </Col>
+                                            <Col md={6}>
+                                                <h5> Expiring on</h5>
+                                                <h5 style={{fontWeight:'bolder'}}>{this.unixToDate(auction.ending_date)}</h5>
+                                            </Col>
+                                        </Row>
+                                        <Row style={{textAlign:'center', paddingBottom:'20px'}}>
+                                            <Col md={6} style={{}}>
+                                                
+                                                <Button  
+                                                    style={{width:'80%', backgroundColor:'#FFA0A0', border:'none', color:'#21325E' }}
+                                                    onClick = { () => {
+                                                        window.location.replace(`explore/${auction._id}`);
+                                                    }}
+                                                > Place bid </Button>
+                                                
+                                            </Col>
+                                            <Col md={6}>
+                                                <Button onClick = { () => {
+                                                        window.location.replace(`explore/${auction._id}`);
+                                                    }} variant='light' style={{width:'80%'}}> View History </Button>
+                                            </Col>
+                                        </Row>
+                                        
+                                </Card>    
+                            </Col>
+                        )
+                        }
+                        else if((this.state.auctionFilterActive==="Ended") && (parseInt(Date.now()) > auction.ending_date)){
+                            return(
+                                <Col md={4} 
+                                    style={{padding: '30px'}}>
+                                    <Card 
+                                        style={{borderTop:"1px solid black"}}>
+                                            <Card.Img 
+                                                style={{height:"270px", objectFit:'cover'}}
+                                                src={auction.link}/>
+                                            <Row style={{marginTop: '20px'}}>
+                                                <Col md={8}>
+                                                    <h4
+                                                    style={{paddingLeft:'20px',fontWeight:'bolder'}}
+                                                >{auction.title}</h4>
+                                                </Col>
+                                                <Col md={4} style={{fontSize:'20px'}}>
+                                                    <AiFillHeart style={{color:'#FFA0A0'}}/>
+                                                    <span style={{marginLeft:'10px'}}>{auction.bid_count} 
+                                                    
+                                                    </span>
+                                                </Col>
+                                            </Row> 
+                                            <Row style={{padding:'20px'}}>
+                                                <Col md={6} style={{}}>
+                                                    <h5> Current Bid </h5>
+                                                    <h5 style={{fontWeight:'bolder'}}> {auction.price} ETH 
+                                                    <FaEthereum style={{color:'#21325E'}}/>
+                                                    </h5>
+                                                </Col>
+                                                <Col md={6}>
+                                                    <h5> Expiring on</h5>
+                                                    <h5 style={{fontWeight:'bolder'}}>{this.unixToDate(auction.ending_date)}</h5>
+                                                </Col>
+                                            </Row>
+                                            <Row style={{textAlign:'center', paddingBottom:'20px'}}>
+                                                <Col md={6} style={{}}>
+                                                    
+                                                    <Button  
+                                                        style={{width:'80%', backgroundColor:'#FFA0A0', border:'none', color:'#21325E' }}
+                                                        onClick = { () => {
+                                                            window.location.replace(`explore/${auction._id}`);
+                                                        }}
+                                                    > Place bid </Button>
+                                                    
+                                                </Col>
+                                                <Col md={6}>
+                                                    <Button onClick = { () => {
+                                                            window.location.replace(`explore/${auction._id}`);
+                                                        }} variant='light' style={{width:'80%'}}> View History </Button>
+                                                </Col>
+                                            </Row>
+                                            
+                                    </Card>    
+                                </Col>
+                            )
+                            }
+                            else if(this.state.auctionFilterActive==="All"){
+                                return(
+                                    <Col md={4} 
+                                        style={{padding: '30px'}}>
+                                        <Card 
+                                            style={{borderTop:"1px solid black"}}>
+                                                <Card.Img 
+                                                    style={{height:"270px", objectFit:'cover'}}
+                                                    src={auction.link}/>
+                                                <Row style={{marginTop: '20px'}}>
+                                                    <Col md={8}>
+                                                        <h4
+                                                        style={{paddingLeft:'20px',fontWeight:'bolder'}}
+                                                    >{auction.title}</h4>
+                                                    </Col>
+                                                    <Col md={4} style={{fontSize:'20px'}}>
+                                                        <AiFillHeart style={{color:'#FFA0A0'}}/>
+                                                        <span style={{marginLeft:'10px'}}>{auction.bid_count} 
+                                                        
+                                                        </span>
+                                                    </Col>
+                                                </Row> 
+                                                <Row style={{padding:'20px'}}>
+                                                    <Col md={6} style={{}}>
+                                                        <h5> Current Bid </h5>
+                                                        <h5 style={{fontWeight:'bolder'}}> {auction.price} ETH 
+                                                        <FaEthereum style={{color:'#21325E'}}/>
+                                                        </h5>
+                                                    </Col>
+                                                    <Col md={6}>
+                                                        <h5> Expiring on</h5>
+                                                        <h5 style={{fontWeight:'bolder'}}>{this.unixToDate(auction.ending_date)}</h5>
+                                                    </Col>
+                                                </Row>
+                                                <Row style={{textAlign:'center', paddingBottom:'20px'}}>
+                                                    <Col md={6} style={{}}>
+                                                        
+                                                        <Button  
+                                                            style={{width:'80%', backgroundColor:'#FFA0A0', border:'none', color:'#21325E' }}
+                                                            onClick = { () => {
+                                                                window.location.replace(`explore/${auction._id}`);
+                                                            }}
+                                                        > Place bid </Button>
+                                                        
+                                                    </Col>
+                                                    <Col md={6}>
+                                                        <Button onClick = { () => {
+                                                                window.location.replace(`explore/${auction._id}`);
+                                                            }} variant='light' style={{width:'80%'}}> View History </Button>
+                                                    </Col>
+                                                </Row>
+                                                
+                                        </Card>    
+                                    </Col>
+                                )
+                            }
                     })}
                 </Row>
             );
@@ -264,7 +377,7 @@ class Home extends Component{
             web3.eth.getBalance(account_addr).then((balance) => {
     
                 var account_bal = (Math.round(web3.utils.fromWei(balance) * 100) / 100);
-                var temp = croppedAddress + " (" + account_bal + " ETH)";
+                var temp = "Connected :"  + croppedAddress + " (" + account_bal + " ETH)";
                 this.setState({connectwalletstatus: temp});
                 this.setState({connect_web3_modal: false});
                 console.log(temp);
@@ -278,7 +391,8 @@ class Home extends Component{
         .request({ method: 'eth_requestAccounts' })
         .catch((err) => {
         if (err.code === 4001) {
-            alert('Please connect to MetaMask.');
+            alert('You refused connection to our website. Please connect to MetaMask.');
+            this.setState({connect_web3_modal: true});
         } else {
             console.error(err);
         }
@@ -296,16 +410,13 @@ class Home extends Component{
                         <Modal.Title>Connect to Web3</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                        <p>Please connect your wallet to access this site. Install metamask and use it with Ropsten test network. If connecting for the first time, reload after connecting.</p>
+                        <p>Hi, welcome to StartBid. Please click the below button to connect your wallet our website. Once metamask opens, simply click connect. </p>
                         </Modal.Body>
                         <Modal.Footer>
                         <Button variant="secondary" onClick={async() => {
                             var web3;
                             if(typeof window.web3 !== 'undefined'){
                                 web3 = new Web3(window.ethereum);
-                                console.log(web3);
-                                // get all accounts
-                                // const accounts = await web3.eth.getAccounts();
                                 this.setState({web3: web3});
                                 this.connect(web3);
                                 this.initialiseAddress(web3);
@@ -323,24 +434,68 @@ class Home extends Component{
                         }}>Connect Wallet</Button>
                     </Modal.Footer>
                 </Modal>
+
+                <Modal show={this.state.metamask_installed}>
+                        <Modal.Header >
+                        <Modal.Title>No Metamask?</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                        <p>Hi, please install Metamask and reload the page. </p>
+                        </Modal.Body>
+                        <Modal.Footer>
+                    </Modal.Footer>
+                </Modal>
          
                 <Row style={{paddingTop:'20px'}}>
-                    <Col md={9}>
+
+                    <Col md={8}>
                     <h1
                     style={{ fontWeight:'bolder', paddingLeft: '20px'}}
                     > Start Bid  </h1>
                     </Col>
-                    <Col md={3} style={{textAlign:'right'}}>
-                    <Button className= "authenticate-btn-active" 
-                        style={{height:'3rem'}} >{this.state.connectwalletstatus} 
+
+                    <Col md={4} style={{textAlign:'right'}}>
+                    <Button className= "authenticate-btn-active"  
+                        style={{height:'3rem'}} onClick={
+                            () => {
+                                var web3 = this.state.web3;
+                                if(this.state.connectwalletstatus === 'Connect Wallet') {
+                                this.connect(web3);
+                                this.initialiseAddress(web3);
+                                }
+                                else {
+                                    var tempact = this.state.account_addr;
+                                    navigator.clipboard.writeText(tempact);
+		                            this.setState({connectwalletstatus: 'Copied'});
+		                            setTimeout(() => this.initialiseAddress(web3), 400);
+                                }
+                            }
+                        }>{this.state.connectwalletstatus} 
                     </Button>
                     </Col>
+
                 </Row>
+
+                <hr></hr>
                 
                 <Row>
                 <Col md={6}>
 
-                <h4 style={{marginLeft:'20px'}}>Live Auctions</h4> 
+                {/* <h4 style={{marginLeft:'20px'}}>{this.state.auctionFilterActive} Auctions</h4>  */}
+                <Dropdown style={{margin:'10px'}}>
+                        <Dropdown.Toggle id="auction-filter"
+                            style={{paddingLeft:'20px', paddingRight:'20px', backgroundColor:'#21325E'}}
+                        >
+                            {this.state.auctionFilterActive} Auctions
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'Live'})}}>Live </Dropdown.Item>
+                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'Ended'})}}>Ended</Dropdown.Item>
+                            <Dropdown.Item onClick={async()=>{await this.setState({auctionFilterActive:'All'})}}>All</Dropdown.Item>
+                        </Dropdown.Menu>
+                        </Dropdown>
+                
                 </Col>
                 <Col md={6} style={{textAlign:'right'}}>
                 <Button 
