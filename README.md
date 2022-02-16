@@ -8,6 +8,8 @@ View our video demo @ https://www.youtube.com/watch?v=ASj3A_qyBL0
 
 View our deployed smart contract and its interactions on https://ropsten.etherscan.io/address/0xe6ccafb99015d50d631b2f310b50471eb411f8da
 
+View our pitch presentation @ https://github.com/bharathbabu68/Red-Ross/blob/main/StartBid%20%E2%80%93%20A%20Decentralized%20Auctioning%20Platform.pptx
+
 ## Our Platform
 ### Introduction
 Our platform involves the development of a decentralized auctioning platform focused on auctioning antique items, antique items are often priceless, and have very high value / worth depending on the item. Since antique items are worth a lot of money, security becomes an important concern because most of the platforms that offer auctions are centralized and thus important information like real-time bids can be easily manipulated by those platforms, so our platform relies on decentralization to solve the problem. However, decentralized platforms hand offer us very high security, but in an auction we dont need just security, we also need low latency. Our solution aims to solve this by ensuring that the auction happens with low latency, while at the same time we donn't compromise in the security of the auction. Also, our platform enables anyone with an ethereum address join our platform and auction their antique products. 
