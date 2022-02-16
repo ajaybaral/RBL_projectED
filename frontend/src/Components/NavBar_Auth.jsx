@@ -20,13 +20,13 @@ class NavBar extends Component {
           <Container fluid>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             
-              <Navbar.Brand href="/" className="navbrandname">
+              <Navbar.Brand href="/explore" className="navbrandname">
               <Image style={{height:"60px",width:"60px"}} src={logo}
               
                 /> 
               </Navbar.Brand>
 
-              <Navbar.Brand href="/" className="navbrandname">
+              <Navbar.Brand href="/explore" className="navbrandname">
               <h2 style={{color:"white", fontWeight:'light'}}>StartBid</h2>
               </Navbar.Brand>
             

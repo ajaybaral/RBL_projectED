@@ -3,6 +3,7 @@ import Home from './Home';
 import NavBar from './NavBar';
 import MakeBid from './MakeBid';
 import Authentication from './Authentication';
+import BidStats from './BidStats';
 import {  BrowserRouter,  Switch, Route, Link, } from "react-router-dom";
 class Main extends Component{
 
@@ -44,9 +45,13 @@ class Main extends Component{
                     <Route path="/authenticate">
                         <Authentication func={this.setname}/>
                     </Route>
+
+                    <Route path="/bidstats">
+                        <BidStats/>
+                    </Route>
                     
                     <Route path="/">
-                        <Home username={this.state.username} /> 
+                        <Authentication func={this.setname}/>
                     </Route>
                 
                 

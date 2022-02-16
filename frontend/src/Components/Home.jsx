@@ -32,6 +32,7 @@ class Home extends Component{
             connect_web3_modal:false,
             metamask_installed:false,
             not_logged_in:false,
+            auction_listed_modal:false,
         };
         this.addproducts=this.addproducts.bind(this);
         this.connect=this.connect.bind(this);
@@ -43,7 +44,7 @@ class Home extends Component{
     componentDidMount = () => {
         var tempvalas = (JSON.parse(localStorage.getItem('user')))
         if(tempvalas==null){
-            window.location.href="http://localhost:3000/authenticate";
+            window.location.href="http://localhost:3000";
         }
         setInterval(async() => {
             await this.setState({bulbColorIndex: (this.state.bulbColorIndex+1)%2});
@@ -75,6 +76,11 @@ class Home extends Component{
                     break;
                 }
             }
+         });
+
+         socket.on('update', data => {
+             console.log("Update received on update socket")
+             this.setState({auctions:data});
          });
 
          var web3;
@@ -132,7 +138,7 @@ class Home extends Component{
                     {this.state.auctions.map((auction)=>{
                         if((this.state.auctionFilterActive==="Live") && (parseInt(Date.now()) < auction.ending_date)){
                         return(
-                            <Col md={4} 
+                            <Col key={auction._id} md={4} 
                                 style={{padding: '30px'}}>
                                 <Card 
                                     style={{borderTop:"1px solid black"}}>
@@ -188,7 +194,7 @@ class Home extends Component{
                                                 }
                     if((this.state.auctionFilterActive==="Live") && (parseInt(Date.now()) < auction.ending_date)){
                         return(
-                            <Col md={4} 
+                            <Col key={auction._id} md={4} 
                                 style={{padding: '30px'}}>
                                 <Card 
                                     style={{borderTop:"1px solid black"}}>
@@ -244,7 +250,7 @@ class Home extends Component{
                         }
                         else if((this.state.auctionFilterActive==="Ended") && (parseInt(Date.now()) > auction.ending_date)){
                             return(
-                                <Col md={4} 
+                                <Col key={auction._id} md={4} 
                                     style={{padding: '30px'}}>
                                     <Card 
                                         style={{borderTop:"1px solid black"}}>
@@ -259,7 +265,7 @@ class Home extends Component{
                                                 </Col>
                                                 <Col md={4} style={{fontSize:'20px'}}>
                                                     <AiFillHeart style={{color:'#FFA0A0'}}/>
-                                                    <span style={{marginLeft:'10px'}}>{auction.bid_count} 
+                                                    <span style={{marginLeft:'10px'}}>{auction.bid_count}
                                                     
                                                     </span>
                                                 </Col>
@@ -435,6 +441,21 @@ class Home extends Component{
                     </Modal.Footer>
                 </Modal>
 
+                <Modal show={this.state.auction_listed_modal}>
+                        <Modal.Header >
+                        <Modal.Title>Transaction Successful</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                        <p>Your product has been successfully listed in the auction.</p>
+                        </Modal.Body>
+                        <Modal.Footer>
+                        <Button variant="secondary" onClick={()=>{this.setState({auction_listed_modal:false})
+                    }}>
+                        Close
+                    </Button>
+                    </Modal.Footer>
+                </Modal>
+
                 <Modal show={this.state.metamask_installed}>
                         <Modal.Header >
                         <Modal.Title>No Metamask?</Modal.Title>
@@ -552,23 +573,18 @@ class Home extends Component{
                         console.log(ending_date);
                         
                         var key={title:title,price:price,description:description,link:link,ending_date:ending_date};
-                        console.log(key)
-                                
-                            fetch('http://localhost:8000/addauction',{
-                            method: 'POST',
-                            headers: {
-                                'Content-Type' : 'application/json'
-                            },
-                            body:JSON.stringify(key)
-                            })
-                            this.setState({setshow:false})
-                            var web3 = this.state.web3;
-                            var account_addr = this.state.account_addr;
-                            var contract = this.state.contractval;
-                            contract.methods.list_new_auction(title, ending_date, price).send({from:account_addr}).then(function(result) {
-                                alert("Transaction Successful");
-                                window.location.href="http://localhost:3000/explore";
-                            });
+                        console.log(key)     
+
+
+                        this.setState({setshow:false})
+                        var web3 = this.state.web3;
+                        var account_addr = this.state.account_addr;
+                        var contract = this.state.contractval;
+                        contract.methods.list_new_auction(title, ending_date, price).send({from:account_addr})
+                        .on('transactionHash', (hash)=> {
+                            this.setState({auction_listed_modal:true});
+                            socket.emit('add_auction', key);
+                        })
                         }} variant="primary" >
                         Submit
                     </Button>

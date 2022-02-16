@@ -43,7 +43,7 @@ class MakeBid extends Component{
     {
         var tempvalas = (JSON.parse(localStorage.getItem('user')))
         if(tempvalas==null){
-            window.location.href="http://localhost:3000/authenticate";
+            window.location.href="http://localhost:3000";
         }
         var web3;
          const Web3 = require('web3');
@@ -371,36 +371,41 @@ class MakeBid extends Component{
                                                 this.setState({balance_modal:true})
                                             }
                                             else{
-                                                socket.emit('change', s);
-                                                this.setState({starttime:Date.now()})
                                                 var auc_id = this.state.product._id;
                                                 var ordervals = this.state.product.bid_count;
                                                 var biddedvals = parseInt(this.state.amount);
                                                 var account_addr = this.state.account_addr;
                                                 var contract = this.state.contractval;
-                                                contract.methods.make_bid(auc_id, ordervals, biddedvals).send({from:account_addr}).then(async(result)=> {
+                                                contract.methods.make_bid(auc_id, ordervals, biddedvals).send({from:account_addr})
+                                                .on('transactionHash', (hash)=> {
+                                                    this.setState({starttime:Date.now()})
+                                                    socket.emit('change', s);
+                                                    console.log(hash);
+                                                })
+                                                .on('receipt', (receipt)=> {
                                                     this.setState({transaction_sucess_modal:true});
                                                     this.setState({tabletoggle:1});
-                                                var auc_id = this.state.product._id;
-                                                var contract = this.state.contractval;
-                                                contract.methods.view_all_transactions(auc_id).call().then(async (result)=> {
-                                                    console.log(result.length);
-                                                    var arr=[];
-                                                    for(var i=result.length-1;i>=0;i--)
-                                                    {
-                                                        arr.push(result[i]);
-                                                    }
-                                                    arr.sort((a,b)=>{
-                                                        if(parseInt(a.timestamp)<parseInt(b.timestamp))
-                                                        return 1;
-                                                        else
-                                                        return -1;
+                                                    var auc_id = this.state.product._id;
+                                                    var contract = this.state.contractval;
+                                                    contract.methods.view_all_transactions(auc_id).call().then(async (result)=> {
+                                                        console.log(result.length);
+                                                        var arr=[];
+                                                        for(var i=result.length-1;i>=0;i--)
+                                                        {
+                                                            arr.push(result[i]);
+                                                        }
+                                                        arr.sort((a,b)=>{
+                                                            if(parseInt(a.timestamp)<parseInt(b.timestamp))
+                                                            return 1;
+                                                            else
+                                                            return -1;
+                                                        })
+                                                        this.setState({tablearr:arr});
+                                                        console.log(this.state.tablearr);
                                                     })
-                                                    this.setState({tablearr:arr});
-                                                    console.log(this.state.tablearr);
-                                                
-                                                
-                                                });
+                                                })
+                                                .on('error', (error, receipt)=> {
+                                                    alert("Your bid has been cancelled");
                                                 });
                                             }
             

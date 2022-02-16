@@ -20,13 +20,13 @@ class NavBar extends Component {
           <Container fluid>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             
-              <Navbar.Brand href="/" className="navbrandname">
+              <Navbar.Brand href="/explore" className="navbrandname">
               <Image style={{height:"60px",width:"60px"}} src={logo}
               
                 /> 
               </Navbar.Brand>
 
-              <Navbar.Brand href="/" className="navbrandname">
+              <Navbar.Brand href="/explore" className="navbrandname">
               <h2 style={{color:"white", fontWeight:'light'}}>StartBid</h2>
               </Navbar.Brand>
             
@@ -45,15 +45,15 @@ class NavBar extends Component {
                 <div className="navdiv  navstyle ">
                   <Nav.Link 
                   style={{color:"white", fontWeight:"bolder", marginRight:'30px'}}
-                  href="/dashboard" className=" navlinks">
-                    My Bids
+                   href="/bidstats" className=" navlinks">
+                    My Bid Stats
                   </Nav.Link>
                 </div>
                 <div className="navdiv navstyle ">
                   <Nav.Link  
                   id="name"
                   style={{color:"white", fontWeight:"bolder", marginRight:'30px'}}
-                  href="/authenticate" className=" navlinks" onClick={()=>{
+                  href="/" className=" navlinks" onClick={()=>{
                     localStorage.removeItem('user');
                   }}>
                     Logout

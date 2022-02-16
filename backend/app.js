@@ -153,6 +153,7 @@ app.post("/addauction",async (req,res)=>{
  
 io.on('connection', socket => {
     console.log("connected")
+
     socket.on('change', async data => {
       
        
@@ -196,6 +197,37 @@ io.on('connection', socket => {
         }
         
     })
+
+    socket.on('add_auction', async data => {
+      
+        var obj = data;
+        try {
+            // Connect to the MongoDB cluster
+            var cursor = await client.db("Auction_Platform").collection("auctions").find();
+            var arr= await cursor.toArray();
+           
+           obj["price"]=parseInt(obj["price"]);
+           obj["ending_date"]=parseInt(obj["ending_date"]);
+           obj["_id"]=arr.length;
+           obj["winner_address"]="";
+           obj["bid_count"]=0;
+           console.log(obj);
+    
+    
+            var result = await client.db("Auction_Platform").collection("auctions").insertOne(obj);
+            cursor = await client.db("Auction_Platform").collection("auctions").find().sort({bid_count:-1});
+            arr= await cursor.toArray();
+            io.emit('update',arr);
+    
+        } catch (e) {
+            console.error(e);
+        } finally {
+            // Close the connection to the MongoDB cluster
+           //  await client.close();
+        
+        }
+        
+    })
 })
 
  server.listen(4000,()=>{
@@ -207,7 +239,7 @@ app.listen(8000,()=>{
 })
 async function findall(client)
 {
-    const cursor = await client.db("Auction_Platform").collection("auctions").find().sort({_id:1});
+    const cursor = await client.db("Auction_Platform").collection("auctions").find().sort({bid_count:-1});
     const arr= await cursor.toArray();
     const j=JSON.stringify(arr);
    return j;
