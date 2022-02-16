@@ -96,7 +96,14 @@ class MakeBid extends Component{
                         var arr=[];
                         for(var i=result.length-1;i>=0;i--)
                         {
-                            arr.push(result[i]);
+                            var temp = {}
+                            temp.order = result[i].order;
+                            temp.bid_placer = result[i].bid_placer;
+                            temp.bidded_value = result[i].bidded_value;
+                            temp.timestamp = result[i].timestamp;
+                            if(temp.bidded_value.length>9)
+                                temp.bidded_value = web3.utils.fromWei(temp.bidded_value, 'ether');
+                            arr.push(temp);
                         }
                         arr.sort((a,b)=>{
                             if(parseInt(a.timestamp)<parseInt(b.timestamp))
@@ -346,7 +353,7 @@ class MakeBid extends Component{
                             <hr /> 
                             <h3 style={{marginTop:'30px'}}> Current Bid : <strong style={{color:'green'}}>{this.state.product.price}</strong> <FaEthereum /></h3>
                             <h5> Number of bidders : <strong> {this.state.product.bid_count} </strong></h5>
-                            <h5> Bidders Rate : <strong> 7 / Hr </strong></h5>
+                            <h5> Current Winner: <span style={{fontWeight:'light', fontSize:'17px'}}> {this.state.product.winner_address} </span> </h5>
                             <hr />
                 
                             <Row>
@@ -371,11 +378,13 @@ class MakeBid extends Component{
                                                 this.setState({balance_modal:true})
                                             }
                                             else{
+                                                var web3 = this.state.web3;
                                                 var auc_id = this.state.product._id;
                                                 var ordervals = this.state.product.bid_count;
-                                                var biddedvals = parseInt(this.state.amount);
+                                                var biddedvals = (this.state.amount).toString();
                                                 var account_addr = this.state.account_addr;
                                                 var contract = this.state.contractval;
+                                                biddedvals = web3.utils.toWei(biddedvals, 'ether');
                                                 contract.methods.make_bid(auc_id, ordervals, biddedvals).send({from:account_addr})
                                                 .on('transactionHash', (hash)=> {
                                                     this.setState({starttime:Date.now()})
@@ -392,7 +401,14 @@ class MakeBid extends Component{
                                                         var arr=[];
                                                         for(var i=result.length-1;i>=0;i--)
                                                         {
-                                                            arr.push(result[i]);
+                                                            var temp = {}
+                                                            temp.order = result[i].order;
+                                                            temp.bid_placer = result[i].bid_placer;
+                                                            temp.bidded_value = result[i].bidded_value;
+                                                            temp.timestamp = result[i].timestamp;
+                                                            if(temp.bidded_value.length>9)
+                                                                temp.bidded_value = web3.utils.fromWei(temp.bidded_value, 'ether');
+                                                            arr.push(temp);
                                                         }
                                                         arr.sort((a,b)=>{
                                                             if(parseInt(a.timestamp)<parseInt(b.timestamp))

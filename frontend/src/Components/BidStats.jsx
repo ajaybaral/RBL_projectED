@@ -171,7 +171,7 @@ class BidStats extends Component{
                                             </Row> 
                                             <Row style={{paddingLeft:'20px'}}>
                                                 <Col md={12} style={{}}>
-                                                    <p>{auction.description}</p>
+                                                    <p>{auction.description.slice(0,50)}</p>
                                                 </Col>
                                             </Row>
                                             <Row style={{paddingLeft:'20px'}}>
@@ -180,6 +180,14 @@ class BidStats extends Component{
                                                     <span style={{fontWeight:'bolder'}}> {auction.price} ETH 
                                                     <FaEthereum style={{color:'#21325E'}}/>
                                                     </span></h5>
+                                                </Col>
+                                            </Row>
+                                            <hr></hr>
+                                            <Row style={{paddingLeft:'20px', paddingRight:'20px'}}>
+                                                <Col md={12} style={{}}>
+                                                    <h6> Auction Owner:  
+                                                    <span style={{fontWeight:'normal', fontSize:'17px'}}> {blockchain_data.auction_owner}  
+                                                    </span></h6>
                                                 </Col>
                                             </Row>
                                             
@@ -234,17 +242,25 @@ class BidStats extends Component{
                                                 </Row> 
                                                 <Row style={{paddingLeft:'20px'}}>
                                                     <Col md={12} style={{}}>
-                                                        <p>{auction.description}</p>
+                                                        <p>{auction.description.slice(0,50)}</p>
                                                     </Col>
                                                 </Row>
                                                 <Row style={{paddingLeft:'20px'}}>
-                                                    <Col md={12} style={{}}>
-                                                        <h5> Your Bid:  
-                                                        <span style={{fontWeight:'bolder'}}> {auction.price} ETH 
-                                                        <FaEthereum style={{color:'#21325E'}}/>
-                                                        </span></h5>
-                                                    </Col>
-                                                </Row>
+                                                <Col md={12} style={{}}>
+                                                    <h5> Your Bid:  
+                                                    <span style={{fontWeight:'bolder'}}> {auction.price} ETH 
+                                                    <FaEthereum style={{color:'#21325E'}}/>
+                                                    </span></h5>
+                                                </Col>
+                                            </Row>
+                                            <hr></hr>
+                                            <Row style={{paddingLeft:'20px', paddingRight:'20px'}}>
+                                                <Col md={12} style={{}}>
+                                                    <h6> Auction Owner:  
+                                                    <span style={{fontWeight:'normal', fontSize:'17px'}}> {blockchain_data.auction_owner}  
+                                                    </span></h6>
+                                                </Col>
+                                            </Row>
                                                 
                                                 <Row style={{textAlign:'center', padding:'20px'}}>
                                                     <Col md={12} style={{}}>
@@ -280,15 +296,23 @@ class BidStats extends Component{
                                                     </Row> 
                                                     <Row style={{paddingLeft:'20px'}}>
                                                         <Col md={12} style={{}}>
-                                                            <p>{auction.description}</p>
+                                                            <p>{auction.description.slice(0,50)}</p>
                                                         </Col>
                                                     </Row>
                                                     <Row style={{paddingLeft:'20px'}}>
                                                         <Col md={12} style={{}}>
-                                                            <h5> Your Bid:  
+                                                            <h5> Current Bid:  
                                                             <span style={{fontWeight:'bolder'}}> {auction.price} ETH 
                                                             <FaEthereum style={{color:'#21325E'}}/>
                                                             </span></h5>
+                                                        </Col>
+                                                    </Row>
+                                                    <hr></hr>
+                                                    <Row style={{paddingLeft:'20px', paddingRight:'20px'}}>
+                                                        <Col md={12} style={{}}>
+                                                            <h6> Current Highest Bidder:  
+                                                            <span style={{fontWeight:'normal', fontSize:'17px'}}> {auction.winner_address}
+                                                            </span></h6>
                                                         </Col>
                                                     </Row>
                                                     
@@ -327,15 +351,24 @@ class BidStats extends Component{
                                                         </Row> 
                                                         <Row style={{paddingLeft:'20px'}}>
                                                             <Col md={12} style={{}}>
-                                                                <p>{auction.description}</p>
+                                                                <p>{auction.description.slice(0,50)}</p>
                                                             </Col>
                                                         </Row>
                                                         <Row style={{paddingLeft:'20px'}}>
                                                             <Col md={12} style={{}}>
-                                                                <h5> Your Bid:  
+                                                                <h5> Winning Bid:  
                                                                 <span style={{fontWeight:'bolder'}}> {auction.price} ETH 
                                                                 <FaEthereum style={{color:'#21325E'}}/>
                                                                 </span></h5>
+                                                            </Col>
+                                                        </Row>
+
+                                                        <hr></hr>
+                                                        <Row style={{paddingLeft:'20px', paddingRight:'20px'}}>
+                                                            <Col md={12} style={{}}>
+                                                                <h6> Winner Address:  
+                                                                <span style={{fontWeight:'normal', fontSize:'17px'}}> {auction.winner_address}  
+                                                                </span></h6>
                                                             </Col>
                                                         </Row>
                                                         
@@ -363,6 +396,131 @@ class BidStats extends Component{
                                             </Col>
                                         )
                                         }
+
+                                        if((filtercriteria=="hosted") &&(this.state.hosted_auctions_filter==="Completed") && (parseInt(Date.now()) > auction.ending_date) && (blockchain_data.auction_owner===this.state.account_addr) && (blockchain_data.is_active==true) && (blockchain_data.amount_status==false)){
+                                            return(
+                                                <Col key={auction._id} md={4} 
+                                                    style={{padding: '30px'}}>
+                                                    <Card 
+                                                        style={{borderTop:"1px solid black"}}>
+                                                            <Card.Img 
+                                                                style={{height:"270px", objectFit:'cover'}}
+                                                                src={auction.link}/>
+                                                            <Row style={{marginTop: '20px'}}>
+                                                                <Col md={8}>
+                                                                    <h4
+                                                                    style={{paddingLeft:'20px',fontWeight:'bolder'}}
+                                                                >{auction.title}</h4>
+                                                                </Col>
+                                                                <Col md={4} style={{fontSize:'20px'}}>
+                                                                    <AiFillHeart style={{color:'#FFA0A0'}}/>
+                                                                    <span style={{marginLeft:'10px'}}>{auction.bid_count}
+                                                                    
+                                                                    </span>
+                                                                </Col>
+                                                            </Row> 
+                                                            <Row style={{paddingLeft:'20px'}}>
+                                                                <Col md={12} style={{}}>
+                                                                    <p>{auction.description.slice(0,50)}</p>
+                                                                </Col>
+                                                            </Row>
+                                                            <Row style={{paddingLeft:'20px'}}>
+                                                                <Col md={12} style={{}}>
+                                                                    <h5> Winning Bid:  
+                                                                    <span style={{fontWeight:'bolder'}}> {auction.price} ETH 
+                                                                    <FaEthereum style={{color:'#21325E'}}/>
+                                                                    </span></h5>
+                                                                </Col>
+                                                            </Row>
+
+                                                            <hr></hr>
+                                                            <Row style={{paddingLeft:'20px', paddingRight:'20px'}}>
+                                                                <Col md={12} style={{}}>
+                                                                    <h6> Winner Address:  
+                                                                    <span style={{fontWeight:'normal', fontSize:'17px'}}> {auction.winner_address}  
+                                                                    </span></h6>
+                                                                </Col>
+                                                            </Row>
+                                                            
+                                                            <Row style={{textAlign:'center', padding:'20px'}}>
+                                                                <Col md={12} style={{}}>
+                                                                <Button disabled  
+                                                            style={{width:'100%', backgroundColor:'#FFA0A0', border:'none', color:'#21325E' }}
+                                                            onClick = { () => {
+                                                                var web3 = this.state.web3;
+                                                                var contract = this.state.contractval;
+                                                                var account_addr = this.state.account_addr;
+                                                                contract.methods.withdraw_from_auction(auction._id).send({from:account_addr})
+                                                                .on('receipt', function(receipt){
+                                                                    alert("Withdrawal Successful");
+                                                                })
+                                                                .on('error', function(error){
+                                                                    alert("Withdrawal Failed");
+                                                                })
+                                                            }}
+                                                        > Awaiting payment </Button>
+                                                                </Col>
+                                                            </Row>
+                                                            
+                                                    </Card>    
+                                                </Col>
+                                            )
+                                            }
+
+                                            if((filtercriteria=="leading")  && (parseInt(Date.now()) < auction.ending_date) && (auction.winner_address===this.state.account_addr)){
+                                                return(
+                                                    <Col key={auction._id} md={4} 
+                                                        style={{padding: '30px'}}>
+                                                        <Card 
+                                                            style={{borderTop:"1px solid black"}}>
+                                                                <Card.Img 
+                                                                    style={{height:"270px", objectFit:'cover'}}
+                                                                    src={auction.link}/>
+                                                                <Row style={{marginTop: '20px'}}>
+                                                                    <Col md={8}>
+                                                                        <h4
+                                                                        style={{paddingLeft:'20px',fontWeight:'bolder'}}
+                                                                    >{auction.title}</h4>
+                                                                    </Col>
+                                                                    <Col md={4} style={{fontSize:'20px'}}>
+                                                                        <AiFillHeart style={{color:'#FFA0A0'}}/>
+                                                                        <span style={{marginLeft:'10px'}}>{auction.bid_count}
+                                                                        
+                                                                        </span>
+                                                                    </Col>
+                                                                </Row> 
+                                                                <Row style={{paddingLeft:'20px'}}>
+                                                                    <Col md={12} style={{}}>
+                                                                        <p>{auction.description.slice(0,50)}</p>
+                                                                    </Col>
+                                                                </Row>
+                                                                <Row style={{paddingLeft:'20px'}}>
+                                                                    <Col md={12} style={{}}>
+                                                                        <h5> Current Bid:  
+                                                                        <span style={{fontWeight:'bolder'}}> {auction.price} ETH 
+                                                                        <FaEthereum style={{color:'#21325E'}}/>
+                                                                        </span></h5>
+                                                                    </Col>
+                                                                </Row>
+                                                                <hr></hr>
+                                                                <Row style={{paddingLeft:'20px', paddingRight:'20px'}}>
+                                                                    <Col md={12} style={{}}>
+                                                                        <h6> Current Highest Bidder:  
+                                                                        <span style={{fontWeight:'normal', fontSize:'17px'}}> {auction.winner_address}
+                                                                        </span></h6>
+                                                                    </Col>
+                                                                </Row>
+                                                                
+                                                                <Row style={{textAlign:'center', padding:'20px'}}>
+                                                                    <Col md={12} style={{}}>
+                                                                        
+                                                                    </Col>
+                                                                </Row>
+                                                                
+                                                        </Card>    
+                                                    </Col>
+                                                )
+                                                }
                             
                         }
                         
@@ -532,7 +690,7 @@ class BidStats extends Component{
                 
                 {this.addproducts("wins")}
                 <hr></hr>
-                <h3 className="ml-3">Your hosted auctions</h3>
+                <h4 className="ml-3">Your hosted auctions</h4>
                 <Row>
                 <Col md={6}>
                 <Dropdown style={{margin:'10px'}}>
@@ -554,6 +712,13 @@ class BidStats extends Component{
                 
                 
                 {this.addproducts("hosted")}
+
+                <hr></hr>
+                <Row>
+                <h4 className="ml-3">Currently leading auctions</h4>
+                </Row>
+
+                {this.addproducts("leading")}
 
             </Container>
             </>
