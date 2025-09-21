@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { MongoClient } = require('mongodb');
  const auctions = [
     {
@@ -53,7 +54,7 @@ const { MongoClient } = require('mongodb');
 
 async function main() {
     
-    const uri = "mongodb+srv://Suriyaa:mthaniga@cluster0.rsh4e.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+    const uri = process.env.MONGODB_URI || "mongodb+srv://Suriyaa:mthaniga@cluster0.rsh4e.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 
   
    const client = new MongoClient(uri);
@@ -76,7 +77,7 @@ async function main() {
 
 main().catch(console.error);
 async function createListings(client, document){
-    const result = await client.db("Auction_Platform").collection("auctions").insertMany(document);
+    const result = await client.db(process.env.DATABASE_NAME || "Auction_Platform").collection("auctions").insertMany(document);
    console.log(result);
 
 }

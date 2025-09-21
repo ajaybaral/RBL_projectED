@@ -135,7 +135,7 @@ class BidStats extends Component{
 
     addproducts(filtercriteria)
     {
-        if(this.state.b==0)
+        if(this.state.b===0)
         {
             return( 
                 <Spinner style={{marginTop:"10%", marginLeft:"10%", marginBottom:"10%", height:"50px",width:"50px"}}  animation="border" role="status">

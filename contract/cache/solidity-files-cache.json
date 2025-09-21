@@ -1,0 +1,40 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "D:\\web3\\StartBid-A-Decentralized-Auctioning-Platform\\contract\\contracts\\StartBidAuction.sol": {
+      "lastModificationDate": 1758481481539,
+      "contentHash": "b6aaef08f94f226e3bdfa5f55a1ccca7",
+      "sourceName": "contracts/StartBidAuction.sol",
+      "solcConfig": {
+        "version": "0.8.18",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.18"
+      ],
+      "artifacts": [
+        "StartBidAuction"
+      ]
+    }
+  }
+}

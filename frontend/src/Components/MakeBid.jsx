@@ -374,7 +374,7 @@ class MakeBid extends Component{
                                             if(parseInt(this.state.amount)<=parseInt(this.state.product.price)){
                                                 this.setState({auction_bid_modal:true})
                                             }
-                                            else if(this.state.account_bal==0){
+                                            else if(this.state.account_bal===0){
                                                 this.setState({balance_modal:true})
                                             }
                                             else{
